@@ -1,0 +1,20 @@
+{
+    "name": "eyebot",
+    "version": "0.1.0",
+    "description": "Another Twitch bot, written in Typescript.",
+    "main": "js/main.js",
+    "scripts": {
+        "start": "node --trace-uncaught --enable-source-maps .",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "watch": "npx tsc --watch"
+    },
+    "author": "eyemotif",
+    "license": "GPL-3.0-or-later",
+    "devDependencies": {
+        "@types/tmi.js": "^1.8.1",
+        "ts-node": "^10.4.0"
+    },
+    "dependencies": {
+        "tmi.js": "^1.8.5"
+    }
+}

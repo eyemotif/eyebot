@@ -1,0 +1,4 @@
+# Ignore Javascript output of the Typescript compiler
+*
+*/
+!.gitignore
