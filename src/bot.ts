@@ -1,11 +1,13 @@
 import { readdirSync, readFileSync } from 'fs'
 import { Client } from 'tmi.js'
 import { Channel, readChannel } from './channel/channel'
+import { createStream, Stream as Livestream } from './livestream'
 import { Arr, Record } from './utils'
 
 export interface Bot {
     Client: Client,
-    Channels: Record<string, Channel>
+    Channels: Record<string, Channel>,
+    Streams: Record<string, Livestream>
 }
 
 export const createBot = (): Bot => {
@@ -28,10 +30,14 @@ export const createBot = (): Bot => {
     })
 
     const channels =
-        Record.fromPairs(Arr.zipSelf(channel => readChannel(channel), channelList))
+        Record.fromPairs(Arr.zipSelf(readChannel, channelList))
+
+    const streams =
+        Record.fromPairs(Arr.zipSelf(createStream, channelList))
 
     return {
         Client: client,
-        Channels: channels
+        Channels: channels,
+        Streams: streams
     }
 }
