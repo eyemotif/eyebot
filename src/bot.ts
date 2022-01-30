@@ -1,12 +1,19 @@
-import { readFileSync } from 'fs'
+import { readdirSync, readFileSync } from 'fs'
 import { Client } from 'tmi.js'
+import { Channel, readChannel } from './channel/channel'
+import { Arr, Record } from './utils'
 
 export interface Bot {
-    Client: Client
+    Client: Client,
+    Channels: Record<string, Channel>
 }
 
 export const createBot = (): Bot => {
-    const channels: string[] = []
+    const channelList =
+        readdirSync('channels')
+            .filter(/.+\.json/.test)
+            .filter(path => path !== 'TEMPLATE.json')
+            .map(path => path.replace(/(.+)\.json/, '$1'))
 
     const client = new Client({
         options: {
@@ -17,10 +24,14 @@ export const createBot = (): Bot => {
             username: readFileSync('creds/twitchchannel', 'utf8'),
             password: readFileSync('creds/oauth', 'utf8')
         },
-        channels: [...channels]
+        channels: [...channelList]
     })
 
+    const channels =
+        Record.fromPairs(Arr.zipSelf(channel => readChannel(channel), channelList))
+
     return {
-        Client: client
+        Client: client,
+        Channels: channels
     }
 }
