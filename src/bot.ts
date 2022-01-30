@@ -2,15 +2,15 @@ import { readdirSync, readFileSync } from 'fs'
 import { Client } from 'tmi.js'
 import { Channel, readChannel } from './channel/channel'
 import { createStream, Stream as Livestream } from './livestream'
-import { Arr, Record } from './utils'
+import { Arr, Record, Result } from './utils'
 
 export interface Bot {
     Client: Client,
     Channels: Record<string, Channel>,
-    Streams: Record<string, Livestream>
+    Streams: Record<string, Livestream>,
 }
 
-export const createBot = (): Bot => {
+export const createBot = (): Result<Bot, string[]> => {
     const channelList =
         readdirSync('channels')
             .filter(/.+\.json/.test)
@@ -29,15 +29,17 @@ export const createBot = (): Bot => {
         channels: [...channelList]
     })
 
-    const channels =
-        Record.fromPairs(Arr.zipSelf(readChannel, channelList))
+    const channelsResult = Result.all(channelList.map(readChannel))
 
-    const streams =
-        Record.fromPairs(Arr.zipSelf(createStream, channelList))
+    return Result.map(channelsOk => {
+        const channels = Record.fromPairs(Arr.zip(channelList, channelsOk))
+        const streams =
+            Record.fromPairs(Arr.zip(channelList, channelsOk.map(createStream)))
 
-    return {
-        Client: client,
-        Channels: channels,
-        Streams: streams
-    }
+        return {
+            Client: client,
+            Channels: channels,
+            Streams: streams
+        }
+    }, channelsResult)
 }

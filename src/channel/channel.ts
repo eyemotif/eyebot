@@ -1,11 +1,14 @@
 import { readFileSync } from 'fs'
 import { Obj, Result, tryJSON } from '../utils'
+import { GambleInfo } from './gambling'
 import { ChannelOptions } from './options'
 import { Person } from './person'
 
 export type Channel = {
-    People: Record<string, Person>,
-    Options: ChannelOptions,
+    People: Record<string, Person>
+    Options: ChannelOptions
+    Gambling: GambleInfo
+    InfoCommands: Record<string, string>
 }
 
 export const readChannel = (channel: string): Result<Channel, string> => {
