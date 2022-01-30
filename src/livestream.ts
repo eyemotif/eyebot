@@ -1,4 +1,4 @@
-export interface Stream {
+export type Stream = {
 
 }
 

@@ -1,1 +1,30 @@
-{}
+{
+    "People": {
+        "me": {
+            "id": "me",
+            "name": "strimmer (me)",
+            "pronouns": "pro/nouns"
+        }
+    },
+    "Gambling": {
+        "Info": {
+            "pointNameSing": "point",
+            "pointNamePlur": "points",
+            "gambleMin": 10,
+            "gambleMax": 10000,
+            "chatReward": 100,
+            "chatRewardCooldown": 60000
+        },
+        "Multipliers": {
+            "0": 0,
+            "35": 1,
+            "50": 2
+        },
+        "Users": {}
+    },
+    "Info_Commands": {},
+    "Options": {
+        "fun": true,
+        "gambling": true
+    }
+}
