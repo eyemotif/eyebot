@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync } from 'fs'
 import { Client } from 'tmi.js'
 import { Channel, readChannel } from './channel/channel'
-import { createStream, Stream as Livestream } from './livestream'
+import { createStream, Livestream } from './livestream'
 import { Arr, Record, Result } from './utils'
 
 export interface Bot {

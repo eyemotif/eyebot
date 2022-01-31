@@ -1,22 +1,24 @@
 import { Channel } from './channel/channel'
 import { Person } from './channel/person'
 
-export type Stream = {
-    joinedPeople: Record<string, Person>
-    lastChatTime: number
-    lastRewardTime: number
-    topic: string | undefined
-    userChatTimes: Record<string, number>
+export type Livestream = {
+    Channel: Channel
+    JoinedPeople: Record<string, Person>
+    LastChatTime: number
+    LastRewardTime: number
+    Topic: string | undefined
+    UserChatTimes: Record<string, number>
 }
 
-export const createStream = (channel: Channel): Stream => {
+export const createStream = (channel: Channel): Livestream => {
     return {
-        joinedPeople: {
+        Channel: channel,
+        JoinedPeople: {
             'me': channel.People['me']
         },
-        lastChatTime: 0,
-        lastRewardTime: 0,
-        topic: undefined,
-        userChatTimes: {}
+        LastChatTime: 0,
+        LastRewardTime: 0,
+        Topic: undefined,
+        UserChatTimes: {}
     }
 }
