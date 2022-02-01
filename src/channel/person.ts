@@ -1,7 +1,7 @@
 import { Livestream } from '../livestream'
 import { Obj, Result } from '../utils'
 
-export type Person = {
+export interface Person {
     id: string
     name: string
     pronouns: string
@@ -21,7 +21,7 @@ export const joinPerson = (personId: string, livestream: Livestream): Result<Liv
 export const leavePerson = (personId: string, livestream: Livestream): Result<Livestream, string> => {
     if (!(personId in livestream.JoinedPeople))
         return Result.error(`Person "${personId}" not joined channel "${livestream.Channel.ChannelString}"`)
-    
+
     let newLivestream = Obj.copy(livestream)
     delete newLivestream.JoinedPeople[personId]
     return Result.ok(newLivestream)

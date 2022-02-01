@@ -6,7 +6,7 @@ import { Person } from './person'
 
 const channelFileKeys = ['People', 'Options', 'Gambling', 'InfoCommands']
 
-export type Channel = {
+export interface Channel {
     ChannelString: string
 
     People: Record<string, Person>

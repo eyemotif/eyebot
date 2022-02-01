@@ -25,6 +25,7 @@
     "InfoCommands": {},
     "Options": {
         "fun": true,
-        "gambling": true
+        "gambling": true,
+        "nonModChatDelay": 5000
     }
 }

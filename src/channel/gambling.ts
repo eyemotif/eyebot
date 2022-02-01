@@ -1,7 +1,7 @@
 import { Obj, Result } from '../utils'
 import { Channel } from './channel'
 
-export type GambleInfo = {
+export interface GambleInfo {
     Info: {
         pointNameSing: string
         pointNamePlur: string

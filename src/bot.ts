@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync } from 'fs'
 import { Client } from 'tmi.js'
-import { Channel, readChannel } from './channel/channel'
+import { Channel, channelString, readChannel, twitchChannelString } from './channel/channel'
 import { createStream, Livestream } from './livestream'
 import { Arr, Record, Result } from './utils'
 
@@ -42,4 +42,15 @@ export const createBot = (): Result<Bot, string[]> => {
             Streams: streams
         }
     }, channelsResult)
+}
+
+export const botSay = (channel: string, isMod: boolean, bot: Bot, message: string, force: boolean = false): number => {
+    const stream = bot.Streams[channelString(channel)]
+    const now = Date.now()
+
+    if (force || isMod || ((now - stream.LastChatTime) >= stream.Channel.Options.nonModChatDelay)) {
+        bot.Client.say(twitchChannelString(channel), message)
+        return now
+    }
+    else return stream.LastChatTime
 }
