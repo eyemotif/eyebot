@@ -13,9 +13,12 @@ export interface Bot {
 export const createBot = (): Result<Bot, string[]> => {
     const channelList =
         readdirSync('channels')
-            .filter(/.+\.json/.test)
+            .filter(path => /.+\.json/.test(path))
             .filter(path => path !== 'TEMPLATE.json')
             .map(path => path.replace(/(.+)\.json/, '$1'))
+
+    if (channelList.length === 0)
+        return Result.error(['Did not find any channels to create'])
 
     const client = new Client({
         options: {

@@ -11,10 +11,12 @@
     "author": "eyemotif",
     "license": "GPL-3.0-or-later",
     "devDependencies": {
+        "@types/clone": "^2.1.1",
         "@types/tmi.js": "^1.8.1",
         "ts-node": "^10.4.0"
     },
     "dependencies": {
+        "clone": "^2.1.2",
         "tmi.js": "^1.8.5"
     }
 }

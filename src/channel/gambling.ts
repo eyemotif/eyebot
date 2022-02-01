@@ -1,3 +1,4 @@
+import clone from 'clone'
 import { Obj, Result } from '../utils'
 import { Channel } from './channel'
 
@@ -73,7 +74,7 @@ export const isValidBet = (bet: BetAmount): boolean => {
 export const setPoints = (pointsFn: (points: number) => number, user: string, gambling: GambleInfo): Result<GambleInfo, string> => {
     const userPoints = gambling.Users[user]
     if (userPoints !== undefined) {
-        let newGambling = Obj.copy(gambling)
+        let newGambling = clone(gambling)
         newGambling.Users[user] = pointsFn(userPoints)
         return Result.ok(newGambling)
     }
@@ -108,7 +109,7 @@ export const gamble = (user: string, betAmount: BetAmount, gambling: GambleInfo)
 
     if (multiplier !== undefined) {
         const newPoints = (userPoints - bet) + (bet * multiplier)
-        let newGambling = Obj.copy(gambling)
+        let newGambling = clone(gambling)
 
         newGambling.Users[user] = newPoints
         return Result.ok([

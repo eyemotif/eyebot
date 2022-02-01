@@ -134,6 +134,7 @@ export const Obj = {
         }
         else return false
     },
+    /** @deprecated since Feb 1 '22 */
     copy: <T>(obj: T): T => Object.assign({}, obj)
 }
 

@@ -15,16 +15,16 @@ export interface Channel {
     InfoCommands: Record<string, string>
 }
 
-export const readChannel = (channelString: string): Result<Channel, string> => {
-    const channelJson = tryJSON(readFileSync(`channels/${channelString}.json`, 'utf8'))
+export const readChannel = (channelStr: string): Result<Channel, string> => {
+    const channelJson = tryJSON(readFileSync(`channels/${channelStr}.json`, 'utf8'))
     const channelObj = (channelJson ?? {}) as Channel
 
     if (Obj.hasKeys(channelFileKeys, channelObj)) {
-        channelObj.ChannelString = channelString
+        channelObj.ChannelString = channelString(channelStr)
         return Result.ok(channelObj)
     }
     else
-        return Result.error(`Could not parse channels/${channelString}.json into a Channel object. Check to see if it matches the structure of channels/TEMPLATE.json.`)
+        return Result.error(`Could not parse channels/${channelString(channelStr)}.json into a Channel object. Check to see if it matches the structure of channels/TEMPLATE.json.`)
 }
 
 export const writeChannel = (channel: Channel) => {

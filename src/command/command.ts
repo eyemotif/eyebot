@@ -14,7 +14,20 @@ export type CommandInput = {
 }
 
 export type CommandResult = {
-    NewJoinedPeople?: Record<string, Person>
+    NewJoinedPerson?: Person
     NewLastChatTime?: number
     NewTopic?: string
+}
+
+export const escapeUnderscores = (message: string) => {
+    const nonEscapedPattern = /([^\\])_/
+    const escapedPattern = /\\_/
+    let result = message
+
+    while (nonEscapedPattern.test(result))
+        result = result.replace(nonEscapedPattern, '$1 ')
+    while (escapedPattern.test(result))
+        result = result.replace(escapedPattern, '_')
+
+    return result
 }

@@ -18,6 +18,9 @@ export class CommandRegister {
     }
 
     public register(key: string, command: Command) {
+        if (this.isDone) throw 'CommandRegister already done'
+
+        console.debug(`Registering ${key}`)
         this.commands[key] = command
         return this
     }

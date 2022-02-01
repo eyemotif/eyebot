@@ -1,3 +1,4 @@
+import clone from 'clone'
 import { Livestream } from '../livestream'
 import { Obj, Result } from '../utils'
 
@@ -13,7 +14,7 @@ export const joinPerson = (personId: string, livestream: Livestream): Result<Liv
     if (personId in livestream.JoinedPeople)
         return Result.error(`Person "${personId}" already joined channel "${livestream.Channel.ChannelString}"`)
 
-    let newLivestream = Obj.copy(livestream)
+    let newLivestream = clone(livestream)
     newLivestream.JoinedPeople[personId] = livestream.Channel.People[personId]
     return Result.ok(newLivestream)
 }
@@ -22,7 +23,7 @@ export const leavePerson = (personId: string, livestream: Livestream): Result<Li
     if (!(personId in livestream.JoinedPeople))
         return Result.error(`Person "${personId}" not joined channel "${livestream.Channel.ChannelString}"`)
 
-    let newLivestream = Obj.copy(livestream)
+    let newLivestream = clone(livestream)
     delete newLivestream.JoinedPeople[personId]
     return Result.ok(newLivestream)
 }
