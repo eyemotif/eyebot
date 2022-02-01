@@ -2,7 +2,7 @@ import clone from 'clone'
 import { stdin, stdout } from 'process'
 import readline from 'readline'
 import { Bot, botSay, createBot } from './bot'
-import { channelString } from './channel/channel'
+import { channelString, writeChannel } from './channel/channel'
 import { joinPerson } from './channel/person'
 import { Command, CommandInput, CommandResult } from './command/command'
 import { collectCommands } from './command/register'
@@ -18,24 +18,32 @@ const rl = readline.createInterface(stdin, stdout)
 
 const runBotDaemon = async () => {
     while (isRunning) {
-        await delay(1000)
+        await delay(500)
+        for (const channel in bot.Channels)
+            writeChannel(bot.Channels[channel])
     }
     console.debug('Daemon stopped.')
 }
 
 const handleCommandResult = (channelStr: string, commandResult: CommandResult): Result<void, string> => {
-    if (commandResult.NewJoinedPerson) {
+    if (commandResult.NewJoinedPerson !== undefined) {
         const joinResult = joinPerson(commandResult.NewJoinedPerson.id, bot.Streams[channelStr])
         if (joinResult.IsOk) {
             bot.Streams[channelStr] = joinResult.Ok
         }
         else return Result.fromError(joinResult)
     }
-    if (commandResult.NewLastChatTime) {
+    if (commandResult.NewLastChatTime !== undefined) {
         bot.Streams[channelStr].LastChatTime = commandResult.NewLastChatTime
     }
-    if (commandResult.NewTopic) {
+    if (commandResult.NewTopic !== undefined) {
         bot.Streams[channelStr].Topic = commandResult.NewTopic
+    }
+    if (commandResult.NewGambling !== undefined) {
+        // TODO: better GambleInfo update handling
+        // TODO: this doesn't actually update the bot's GambleInfo
+        bot.Channels[channelStr].Gambling = commandResult.NewGambling
+        bot.Streams[channelStr].Channel.Gambling = commandResult.NewGambling
     }
     return Result.ok(void 0)
 }

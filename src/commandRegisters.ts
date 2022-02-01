@@ -1,2 +1,3 @@
 import './commands/common'
-import './command/moderator'
+import './commands/moderator'
+import './commands/gambling'

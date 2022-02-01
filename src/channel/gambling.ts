@@ -16,10 +16,14 @@ export interface GambleInfo {
 }
 
 export type GambleResult = {
+    Status: 'ok'
     User: string,
     Roll: number,
     Bet: number,
     Difference: number
+} | {
+    Status: 'error'
+    Message: string
 }
 
 export type BetAmount =
@@ -98,11 +102,20 @@ export const gamble = (user: string, betAmount: BetAmount, gambling: GambleInfo)
 
     const pointsString = pointsNameString(gambling)
     if (gambling.Info.gambleMax !== undefined && bet > gambling.Info.gambleMax)
-        return Result.error(`Bet ${bet} is over the maximum bet of ${gambling.Info.gambleMax} ${pointsString(gambling.Info.gambleMax)}`)
+        return Result.ok([{
+            Status: 'error',
+            Message: `Bet ${bet} is over the maximum bet of ${gambling.Info.gambleMax} ${pointsString(gambling.Info.gambleMax)}`
+        }, gambling])
     if (gambling.Info.gambleMin !== undefined && bet > gambling.Info.gambleMin)
-        return Result.error(`Bet ${bet} is under the minimum bet of ${gambling.Info.gambleMin} ${pointsString(gambling.Info.gambleMin)}`)
+        return Result.ok([{
+            Status: 'error',
+            Message: `Bet ${bet} is under the minimum bet of ${gambling.Info.gambleMin} ${pointsString(gambling.Info.gambleMin)}`
+        }, gambling])
     if (bet > userPoints)
-        return Result.error(`Not enough ${gambling.Info.pointNamePlur} (${userPoints}) to bet ${bet} ${pointsString(bet)}`)
+        return Result.ok([{
+            Status: 'error',
+            Message: `Not enough ${gambling.Info.pointNamePlur} (${userPoints}) to bet ${bet} ${pointsString(bet)}`
+        }, gambling])
 
     const roll = Math.floor(Math.random() * 101)
     const multiplier = findMultiplier(roll, gambling)
@@ -114,6 +127,7 @@ export const gamble = (user: string, betAmount: BetAmount, gambling: GambleInfo)
         newGambling.Users[user] = newPoints
         return Result.ok([
             {
+                Status: 'ok',
                 User: user,
                 Roll: roll,
                 Bet: bet,

@@ -16,7 +16,7 @@ registerCommands(registry =>
                         .filter(([_, command]) => command.canRun(bot, com))
                         .map(([key, _]) => key)
                         .join(', ')
-                const newChatTime = say(com, bot, `Commands: ${commandListString}`)
+                const newChatTime = say(com, bot, `Commands: ${commandListString}.`)
                 return { NewLastChatTime: newChatTime }
             }
         })

@@ -1,4 +1,5 @@
 import { Bot } from '../bot';
+import { GambleInfo } from '../channel/gambling';
 import { Person } from '../channel/person';
 import { Livestream } from '../livestream';
 
@@ -17,6 +18,7 @@ export type CommandResult = {
     NewJoinedPerson?: Person
     NewLastChatTime?: number
     NewTopic?: string
+    NewGambling?: GambleInfo
 }
 
 export const escapeUnderscores = (message: string) => {
