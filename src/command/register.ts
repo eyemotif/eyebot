@@ -20,8 +20,12 @@ export class CommandRegister {
     public register(key: string, command: Command) {
         if (this.isDone) throw 'CommandRegister already done'
 
-        console.debug(`Registering ${key}`)
         this.commands[key] = command
         return this
     }
 }
+
+let registry = new CommandRegister()
+
+export const registerCommands = (fn: (commandRegister: CommandRegister) => void) => fn(registry)
+export const collectCommands = () => CommandRegister.Finish(registry)

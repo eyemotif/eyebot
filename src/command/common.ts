@@ -1,5 +1,5 @@
 import { Bot, botSay } from '../bot';
-import { registerCommands } from '../main';
+import { registerCommands } from './register';
 import { CommandInput, CommandResult } from './command';
 
 const canRun = (_bot: Bot, _com: CommandInput) => true

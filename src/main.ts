@@ -1,18 +1,20 @@
 import clone from 'clone'
+import { stdin, stdout } from 'process'
+import readline from 'readline'
 import { Bot, botSay, createBot } from './bot'
 import { channelString } from './channel/channel'
 import { joinPerson } from './channel/person'
 import { Command, CommandInput, CommandResult } from './command/command'
-import { CommandRegister } from './command/register'
-import { delay, Obj, Result } from './utils'
+import { collectCommands } from './command/register'
+import { delay, Result } from './utils'
 
-let registry = new CommandRegister()
+import './commandRegisters'
+
 let isRunning = false
 let commands: Record<string, Command>
 let bot: Bot
 
-export const registerCommands = (fn: (commandRegister: CommandRegister) => void) => fn(registry)
-export const collectCommands = () => CommandRegister.Finish(registry)
+const rl = readline.createInterface(stdin, stdout)
 
 const runBotDaemon = async () => {
     while (isRunning) {
@@ -53,7 +55,6 @@ const main = async () => {
         .then(_ => {
             isRunning = true
             commands = collectCommands()
-            console.debug(commands)
             runBotDaemon()
         })
         .catch(reason => {
@@ -83,7 +84,9 @@ const main = async () => {
                     IsMod: isMod,
                     Stream: bot.Streams[channelStr]
                 }
-                const botCopy = clone(bot)
+                // this breaks. idk why
+                // const botCopy = clone(bot, true)
+                const botCopy = bot
                 if (command.canRun(botCopy, commandInput)) {
                     const commandResult = command.run(botCopy, commandInput, commandBody)
 
@@ -96,7 +99,7 @@ const main = async () => {
             }
             else {
                 if (isMod) botSay(channel, isMod, bot, `${userstate.username} command "${commandKey}" not found.`)
-                console.error(`* ERROR: Command ${channelStr}:${commandKey} not found`)
+                // console.error(`* ERROR: Command ${channelStr}:${commandKey} not found`)
             }
         }
     })
@@ -104,9 +107,15 @@ const main = async () => {
 }
 main()
 
-delay(5000).then(() => {
-    if (isRunning) {
-        isRunning = false
-        bot.Client.disconnect()
+rl.on('line', line => {
+    switch (line) {
+        case 'q':
+            if (isRunning) {
+                isRunning = false
+                bot.Client.disconnect()
+            }
+            rl.close()
+            break
+        default: break
     }
 })
