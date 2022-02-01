@@ -20,7 +20,10 @@ export class CommandRegister {
     public register(key: string, command: Command) {
         if (this.isDone) throw 'CommandRegister already done'
 
-        this.commands[key] = command
+        if (this.commands[key.toLowerCase()] !== undefined)
+            throw `Command "${key.toLowerCase()}" already registered`
+
+        this.commands[key.toLowerCase()] = command
         return this
     }
 }

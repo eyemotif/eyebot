@@ -1,13 +1,15 @@
 import { readdirSync, readFileSync } from 'fs'
 import { Client } from 'tmi.js'
 import { Channel, channelString, readChannel, twitchChannelString } from './channel/channel'
+import { Command } from './command/command'
 import { createStream, Livestream } from './livestream'
 import { Arr, Record, Result } from './utils'
 
 export interface Bot {
-    Client: Client,
-    Channels: Record<string, Channel>,
-    Streams: Record<string, Livestream>,
+    Client: Client
+    Channels: Record<string, Channel>
+    Streams: Record<string, Livestream>
+    Commands: Record<string, Command>
 }
 
 export const createBot = (): Result<Bot, string[]> => {
@@ -42,7 +44,8 @@ export const createBot = (): Result<Bot, string[]> => {
         return {
             Client: client,
             Channels: channels,
-            Streams: streams
+            Streams: streams,
+            Commands: {},
         }
     }, channelsResult)
 }

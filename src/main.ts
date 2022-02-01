@@ -55,6 +55,7 @@ const main = async () => {
         .then(_ => {
             isRunning = true
             commands = collectCommands()
+            bot.Commands = clone(commands)
             runBotDaemon()
         })
         .catch(reason => {

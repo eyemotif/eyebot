@@ -1,1 +1,2 @@
-import './command/common'
+import './commands/common'
+import './command/moderator'
