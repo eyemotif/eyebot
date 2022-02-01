@@ -28,6 +28,7 @@ export const readChannel = (channelString: string): Result<Channel, string> => {
 }
 
 export const writeChannel = (channel: Channel) => {
+    // yeah i know this is gross. ill find a better solution later
     let objectToWrite: any = {}
     let channelObj = channel as any
     for (const key of channelFileKeys)
