@@ -1,12 +1,14 @@
+import { Alias } from './alias'
 import { Command } from './command'
 
 export class CommandRegister {
-    public static Finish(register: CommandRegister) {
+    public static Finish(register: CommandRegister): [Record<string, Command>, Record<string, Alias[]>] {
         register.isDone = false
-        return register.commands
+        return [register.commands, register.aliases]
     }
 
     private commands: Record<string, Command>
+    private aliases: Record<string, Alias[]>
     private isDone = false
 
     public get IsDone(): boolean {
@@ -15,6 +17,7 @@ export class CommandRegister {
 
     public constructor() {
         this.commands = {}
+        this.aliases = {}
     }
 
     public register(key: string, command: Command) {
@@ -24,6 +27,16 @@ export class CommandRegister {
             throw `Command "${key.toLowerCase()}" already registered`
 
         this.commands[key.toLowerCase()] = command
+        return this
+    }
+    public registerAlias(key: string, alias: Alias) {
+        if (this.isDone) throw 'CommandRegister already done'
+
+        let maybeAliases = this.aliases[key]
+        if (!maybeAliases) maybeAliases = []
+        maybeAliases.push(alias)
+
+        this.aliases[key] = maybeAliases
         return this
     }
 }

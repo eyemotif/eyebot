@@ -20,4 +20,6 @@ registerCommands(registry =>
                 return { NewLastChatTime: newChatTime }
             }
         })
+    
+    .registerAlias('help', ([key, _body]) => ['commands', []])
 ) 

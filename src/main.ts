@@ -4,6 +4,7 @@ import readline from 'readline'
 import { Bot, botSay, createBot } from './bot'
 import { channelString, writeChannel } from './channel/channel'
 import { joinPerson } from './channel/person'
+import { Alias, dealias } from './command/alias'
 import { Command, CommandInput, CommandResult } from './command/command'
 import { collectCommands } from './command/register'
 import { delay, Result } from './utils'
@@ -12,6 +13,7 @@ import './commandRegisters'
 
 let isRunning = false
 let commands: Record<string, Command>
+let aliases: Record<string, Alias[]>
 let bot: Bot
 
 const rl = readline.createInterface(stdin, stdout)
@@ -48,7 +50,7 @@ const handleCommandResult = (channelStr: string, commandResult: CommandResult): 
     return Result.ok(void 0)
 }
 
-const main = async () => {
+const main = () => {
     const botResult = createBot()
     if (!botResult.IsOk) {
         const botError = botResult.Error
@@ -58,11 +60,12 @@ const main = async () => {
     }
     bot = botResult.Ok
 
-    await delay(500)
     bot.Client.connect()
         .then(_ => {
             isRunning = true
-            commands = collectCommands()
+            const [cmnds, aliss] = collectCommands()
+            commands = cmnds
+            aliases = aliss
             bot.Commands = clone(commands)
             runBotDaemon()
         })
@@ -84,10 +87,10 @@ const main = async () => {
         if (message.startsWith(bot.Channels[channelStr].Options.commandPrefix)) {
             const split = message.trim().split(/ +/)
             const commandKey = split[0].substring(bot.Channels[channelStr].Options.commandPrefix.length)
-            const commandBody = split.slice(1)
+            const body = split.slice(1)
 
-            const command = commands[commandKey]
-            if (command) {
+            const [command, commandBody] = dealias(commands, aliases, [commandKey, body]) ?? []
+            if (command && commandBody) {
                 const commandInput: CommandInput = {
                     Username: userstate.username,
                     IsMod: isMod,
