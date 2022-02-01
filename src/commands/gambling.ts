@@ -99,4 +99,6 @@ registerCommands(registry =>
                 }
             }
         })
+
+        .registerAlias('bet', ([_key, body]) => ['gamble', body])
 )

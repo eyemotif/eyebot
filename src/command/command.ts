@@ -15,7 +15,7 @@ export type CommandInput = {
 }
 
 export type CommandResult = {
-    NewJoinedPerson?: Person
+    NewJoinedPeople?: Record<string, Person>
     NewLastChatTime?: number
     NewTopic?: string
     NewGambling?: GambleInfo

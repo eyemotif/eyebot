@@ -32,11 +32,11 @@ export class CommandRegister {
     public registerAlias(key: string, alias: Alias) {
         if (this.isDone) throw 'CommandRegister already done'
 
-        let maybeAliases = this.aliases[key]
+        let maybeAliases = this.aliases[key.toLowerCase()]
         if (!maybeAliases) maybeAliases = []
         maybeAliases.push(alias)
 
-        this.aliases[key] = maybeAliases
+        this.aliases[key.toLowerCase()] = maybeAliases
         return this
     }
 }

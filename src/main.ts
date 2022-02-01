@@ -28,12 +28,8 @@ const runBotDaemon = async () => {
 }
 
 const handleCommandResult = (channelStr: string, commandResult: CommandResult): Result<void, string> => {
-    if (commandResult.NewJoinedPerson !== undefined) {
-        const joinResult = joinPerson(commandResult.NewJoinedPerson.id, bot.Streams[channelStr])
-        if (joinResult.IsOk) {
-            bot.Streams[channelStr] = joinResult.Ok
-        }
-        else return Result.fromError(joinResult)
+    if (commandResult.NewJoinedPeople !== undefined) {
+        bot.Streams[channelStr].JoinedPeople = commandResult.NewJoinedPeople
     }
     if (commandResult.NewLastChatTime !== undefined) {
         bot.Streams[channelStr].LastChatTime = commandResult.NewLastChatTime

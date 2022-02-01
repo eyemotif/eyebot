@@ -20,6 +20,34 @@ registerCommands(registry =>
                 return { NewLastChatTime: newChatTime }
             }
         })
-    
-    .registerAlias('help', ([key, _body]) => ['commands', []])
+        .register('pronouns', {
+            canRun,
+            run: (bot, com, _body) => {
+                const pronounsString =
+                    Record.toPairs(com.Stream.JoinedPeople)
+                        .map(([_, person]) => `- ${person.name}: ${person.pronouns}`)
+                        .join(', ')
+                const newChatTime = say(com, bot, pronounsString)
+                return { NewLastChatTime: newChatTime }
+            }
+        })
+        .register('topic', {
+            canRun,
+            run: (bot, com, _body) => {
+                if (com.Stream.Topic) {
+                    const newChatTime = say(com, bot, com.Stream.Topic)
+                    return { NewLastChatTime: newChatTime }
+                }
+                else {
+                    if (com.IsMod) {
+                        const newChatTime = say(com, bot, `@${com.Username} no topic set.`)
+                        return { NewLastChatTime: newChatTime }
+                    }
+                    else return {}
+                }
+            }
+        })
+
+        .registerAlias('help', ([_key, _body]) => ['commands', []])
+        .registerAlias('today', ([_key, _body]) => ['topic', []])
 ) 
