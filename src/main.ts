@@ -3,13 +3,13 @@ import { stdin, stdout } from 'process'
 import readline from 'readline'
 import { Bot, botSay, createBot } from './bot'
 import { channelString, writeChannel } from './channel/channel'
-import { joinPerson } from './channel/person'
 import { Alias, dealias } from './command/alias'
 import { Command, CommandInput, CommandResult } from './command/command'
 import { collectCommands } from './command/register'
 import { delay, Result } from './utils'
 
-import './commandRegisters'
+import './commands/commandRegisters'
+import './listeners/messageListeners'
 
 let isRunning = false
 let commands: Record<string, Command>
