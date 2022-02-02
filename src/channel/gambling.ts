@@ -114,7 +114,7 @@ export const gamble = (user: string, betAmount: BetAmount, gambling: GambleInfo)
             Status: 'error',
             Message: `Bet ${bet} is over the maximum bet of ${gambling.Info.gambleMax} ${pointsString(gambling.Info.gambleMax)}`
         }, gambling])
-    if (gambling.Info.gambleMin !== undefined && bet > gambling.Info.gambleMin)
+    if (gambling.Info.gambleMin !== undefined && bet < gambling.Info.gambleMin)
         return Result.ok([{
             Status: 'error',
             Message: `Bet ${bet} is under the minimum bet of ${gambling.Info.gambleMin} ${pointsString(gambling.Info.gambleMin)}`

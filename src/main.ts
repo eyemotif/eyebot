@@ -3,15 +3,15 @@ import { stdin, stdout } from 'process'
 import readline from 'readline'
 import { Bot, chatSay, createBot } from './bot'
 import { channelString, writeChannel } from './channel/channel'
+import { ChatInfo } from './chatInfo'
 import { Alias, dealias } from './command/alias'
 import { Command, CommandResult } from './command/command'
 import { collectCommands } from './command/register'
+import { listenAll } from './messageListener'
 import { delay, Result } from './utils'
 
 import './commands/commandRegisters'
 import './listeners/messageListeners'
-import { ChatInfo } from './chatInfo'
-import { listenAll } from './messageListener'
 
 let isRunning = false
 let commands: Record<string, Command>
@@ -23,8 +23,9 @@ const rl = readline.createInterface(stdin, stdout)
 const runBotDaemon = async () => {
     while (isRunning) {
         await delay(500)
-        for (const channel in bot.Channels)
+        for (const channel in bot.Channels) {
             writeChannel(bot.Channels[channel])
+        }
     }
     console.debug('Daemon stopped.')
 }
@@ -84,8 +85,10 @@ const main = () => {
         }
 
         bot.Streams[channelStr].UserChatTimes[userstate.username] = Date.now()
-        if (bot.Channels[channelStr].Options.gambling)
-            bot.Channels[channelStr].Gambling.Users[userstate.username] = 0
+        if (bot.Channels[channelStr].Options.gambling) {
+            if (bot.Channels[channelStr].Gambling.Users[userstate.username] === undefined)
+                bot.Channels[channelStr].Gambling.Users[userstate.username] = 0
+        }
 
         if (message.startsWith(bot.Channels[channelStr].Options.commandPrefix)) {
             const split = message.trim().split(/ +/)

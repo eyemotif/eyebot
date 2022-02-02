@@ -29,6 +29,13 @@ export class MessageListener {
         })
         return this
     }
+    public matches(value: RegExp, fn: (bot: Bot, chatInfo: ChatInfo, message: string) => void) {
+        this.listeners.push((bot, chatInfo, message) => {
+            if (value.test(message))
+                fn(bot, chatInfo, message)
+        })
+        return this
+    }
 }
 
 let listeners: MessageListener[] = []
