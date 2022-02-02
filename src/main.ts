@@ -11,6 +11,7 @@ import { delay, Result } from './utils'
 import './commands/commandRegisters'
 import './listeners/messageListeners'
 import { ChatInfo } from './chatInfo'
+import { listenAll } from './messageListener'
 
 let isRunning = false
 let commands: Record<string, Command>
@@ -111,6 +112,7 @@ const main = () => {
                 // console.error(`* ERROR: Command ${channelStr}:${commandKey} not found`)
             }
         }
+        else listenAll(bot, chatInfo, message)
     })
 
 }

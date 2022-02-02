@@ -25,6 +25,10 @@ registerListener(
                 chatSay(bot, chatInfo, 'frong')
         })
 
+        .contains('bot_works', (bot, chatInfo, _message) => {
+            if (chatInfo.Stream.Channel.Options.fun)
+                chatSay(bot, chatInfo, `This bot has no bugs :)`)
+        })
         .contains('gamer', (bot, chatInfo, _message) => {
             if (chatInfo.Stream.Channel.Options.fun)
                 chatSay(bot, chatInfo, `@${chatInfo.Username} gaymer*`)
