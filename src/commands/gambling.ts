@@ -1,11 +1,10 @@
-import { Bot, botSay } from '../bot'
+import { Bot, chatSay } from '../bot'
 import { gamble, isValidBet, parseBetAmount, pointsNameString, setPoints } from '../channel/gambling'
-import { CommandInput } from '../command/command'
+import { ChatInfo } from '../chatInfo'
 import { registerCommands } from '../command/register'
 
-const canRun = (_bot: Bot, com: CommandInput) => com.Stream.Channel.Options.gambling
-const canRunMod = (_bot: Bot, com: CommandInput) => com.Stream.Channel.Options.gambling && com.IsMod
-const say = (com: CommandInput, bot: Bot, message: string, override: boolean = false) => botSay(com.Stream.Channel.ChannelString, com.IsMod, bot, message, override)
+const canRun = (_bot: Bot, com: ChatInfo) => com.Stream.Channel.Options.gambling
+const canRunMod = (_bot: Bot, com: ChatInfo) => com.Stream.Channel.Options.gambling && com.IsMod
 
 registerCommands(registry =>
     registry
@@ -14,7 +13,7 @@ registerCommands(registry =>
             run: (bot, com, _body) => {
                 const points = com.Stream.Channel.Gambling.Users[com.Username]
                 const pointsString = pointsNameString(com.Stream.Channel.Gambling)(points)
-                const newChatTime = say(com, bot, `@${com.Username} you have ${points} ${pointsString}.`, true)
+                const newChatTime = chatSay(bot, com, `@${com.Username} you have ${points} ${pointsString}.`, true)
                 return { NewLastChatTime: newChatTime }
             }
         })
@@ -22,7 +21,7 @@ registerCommands(registry =>
             canRun,
             run: (bot, com, body) => {
                 if (body.length !== 1) {
-                    const newChatTime = say(com, bot, `Usage: ${com.Stream.Channel.Options.commandPrefix}gamble <"help"|amount>.`)
+                    const newChatTime = chatSay(bot, com, `Usage: ${com.Stream.Channel.Options.commandPrefix}gamble <"help"|amount>.`)
                     return { NewLastChatTime: newChatTime }
                 }
 
@@ -37,7 +36,7 @@ registerCommands(registry =>
                         .map(line => `${com.Stream.Channel.Options.commandPrefix}gamble ${line}`)
                     let newChatTime = 0
                     for (const line of helpMessage)
-                        newChatTime = say(com, bot, line, true)
+                        newChatTime = chatSay(bot, com, line, true)
                     return { NewLastChatTime: newChatTime }
                 }
                 else {
@@ -50,23 +49,23 @@ registerCommands(registry =>
                                 const pointsString = pointsNameString(com.Stream.Channel.Gambling)
                                 const gambleMessage = `${com.Username} bet ${result.Bet} ${pointsString(result.Bet)} and rolled a ${result.Roll}, ${result.Difference >= 0 ? 'winning' : 'losing'} ${Math.abs(result.Difference)} ${pointsString(Math.abs(result.Difference))}!`
 
-                                const newChatTime = say(com, bot, gambleMessage, true)
+                                const newChatTime = chatSay(bot, com, gambleMessage, true)
                                 return { NewGambling: newGambling, NewLastChatTime: newChatTime }
                             }
                             else {
-                                const newChatTime = say(com, bot, `@${com.Username} ${result.Message}.`)
+                                const newChatTime = chatSay(bot, com, `@${com.Username} ${result.Message}.`)
                                 return { NewLastChatTime: newChatTime }
                             }
                         }
                         else {
                             const gambleError = gambleResult.Error
-                            const newChatTime = say(com, bot, `@${com.Username} Could not gamble.`, true)
+                            const newChatTime = chatSay(bot, com, `@${com.Username} Could not gamble.`, true)
                             console.error(`* ERROR: Could not gamble: ${gambleError}`)
                             return { NewLastChatTime: newChatTime }
                         }
                     }
                     else {
-                        const newChatTime = say(com, bot, `@${com.Username} Invalid bet amount.`, true)
+                        const newChatTime = chatSay(bot, com, `@${com.Username} Invalid bet amount.`, true)
                         return { NewLastChatTime: newChatTime }
                     }
                 }
@@ -76,7 +75,7 @@ registerCommands(registry =>
             canRun: canRunMod,
             run: (bot, com, body) => {
                 if (body.length !== 2) {
-                    const newChatTime = say(com, bot, `Usage: ${com.Stream.Channel.Options.commandPrefix}givepoints <target> <amount>.`)
+                    const newChatTime = chatSay(bot, com, `Usage: ${com.Stream.Channel.Options.commandPrefix}givepoints <target> <amount>.`)
                     return { NewLastChatTime: newChatTime }
                 }
 
@@ -84,7 +83,7 @@ registerCommands(registry =>
                 const amount = parseInt(body[1])
 
                 if (isNaN(amount)) {
-                    const newChatTime = say(com, bot, `${com.Username} Invalid ${com.Stream.Channel.Gambling.Info.pointNameSing} amount.`)
+                    const newChatTime = chatSay(bot, com, `${com.Username} Invalid ${com.Stream.Channel.Gambling.Info.pointNameSing} amount.`)
                     return { NewLastChatTime: newChatTime }
                 }
 
@@ -93,7 +92,7 @@ registerCommands(registry =>
                     return { NewGambling: setPointResult.Ok }
                 else {
                     const setPointError = setPointResult.Error
-                    const newChatTime = say(com, bot, `@${com.Username} Could not give ${com.Stream.Channel.Gambling.Info.pointNamePlur}.`, true)
+                    const newChatTime = chatSay(bot, com, `@${com.Username} Could not give ${com.Stream.Channel.Gambling.Info.pointNamePlur}.`, true)
                     console.error(`* ERROR: Could not gamble: ${setPointError}`)
                     return { NewLastChatTime: newChatTime }
                 }

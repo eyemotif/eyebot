@@ -1,17 +1,12 @@
 import { Bot } from '../bot';
 import { GambleInfo } from '../channel/gambling';
 import { Person } from '../channel/person';
+import { ChatInfo } from '../chatInfo';
 import { Livestream } from '../livestream';
 
 export interface Command {
-    canRun: (bot: Bot, com: CommandInput) => boolean
-    run: (bot: Bot, com: CommandInput, body: string[]) => CommandResult
-}
-
-export type CommandInput = {
-    Username: string
-    IsMod: boolean
-    Stream: Livestream
+    canRun: (bot: Bot, com: ChatInfo) => boolean
+    run: (bot: Bot, com: ChatInfo, body: string[]) => CommandResult
 }
 
 export type CommandResult = {

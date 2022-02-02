@@ -1,17 +1,17 @@
-import { Bot, botSay } from '../bot'
+import { Bot, chatSay } from '../bot'
 import { joinPerson, leavePerson } from '../channel/person'
-import { CommandInput, escapeUnderscores } from '../command/command'
+import { ChatInfo } from '../chatInfo'
+import { escapeUnderscores } from '../command/command'
 import { registerCommands } from '../command/register'
 
-const canRun = (_bot: Bot, com: CommandInput) => com.IsMod
-const say = (com: CommandInput, bot: Bot, message: string) => botSay(com.Stream.Channel.ChannelString, com.IsMod, bot, message)
+const canRun = (_bot: Bot, com: ChatInfo) => com.IsMod
 
 registerCommands(registry =>
     registry
         .register('ping', {
             canRun,
             run: (bot, com, _body) => {
-                const newChatTime = say(com, bot, 'Pong!')
+                const newChatTime = chatSay(bot, com, 'Pong!')
                 return { NewLastChatTime: newChatTime }
             }
         })
@@ -19,7 +19,7 @@ registerCommands(registry =>
             canRun,
             run: (bot, com, body) => {
                 if (body.length == 0) {
-                    const newChatTime = say(com, bot, `Usage: ${com.Stream.Channel.Options.commandPrefix}settopic <topic...>.`)
+                    const newChatTime = chatSay(bot, com, `Usage: ${com.Stream.Channel.Options.commandPrefix}settopic <topic...>.`)
                     return { NewLastChatTime: newChatTime }
                 }
                 const newTopic = escapeUnderscores(body.join(' '))
@@ -30,7 +30,7 @@ registerCommands(registry =>
             canRun,
             run: (bot, com, body) => {
                 if (body.length !== 1) {
-                    const newChatTime = say(com, bot, `Usage: ${com.Stream.Channel.Options.commandPrefix}join <person>.`)
+                    const newChatTime = chatSay(bot, com, `Usage: ${com.Stream.Channel.Options.commandPrefix}join <person>.`)
                     return { NewLastChatTime: newChatTime }
                 }
                 const joinResult = joinPerson(body[0], com.Stream)
@@ -40,7 +40,7 @@ registerCommands(registry =>
                 }
                 else {
                     const joinError = joinResult.Error
-                    const newChatTime = say(com, bot, `@${com.Username} Could not join "${body[0]}": ${joinError}.`)
+                    const newChatTime = chatSay(bot, com, `@${com.Username} Could not join "${body[0]}": ${joinError}.`)
                     return { NewLastChatTime: newChatTime }
                 }
             }
@@ -49,7 +49,7 @@ registerCommands(registry =>
             canRun,
             run: (bot, com, body) => {
                 if (body.length !== 1) {
-                    const newChatTime = say(com, bot, `Usage: ${com.Stream.Channel.Options.commandPrefix}leave <person>.`)
+                    const newChatTime = chatSay(bot, com, `Usage: ${com.Stream.Channel.Options.commandPrefix}leave <person>.`)
                     return { NewLastChatTime: newChatTime }
                 }
                 const leaveResult = leavePerson(body[0], com.Stream)
@@ -59,7 +59,7 @@ registerCommands(registry =>
                 }
                 else {
                     const leaveError = leaveResult.Error
-                    const newChatTime = say(com, bot, `@${com.Username} Could not leave "${body[0]}": ${leaveError}.`)
+                    const newChatTime = chatSay(bot, com, `@${com.Username} Could not leave "${body[0]}": ${leaveError}.`)
                     return { NewLastChatTime: newChatTime }
                 }
             }
@@ -70,7 +70,7 @@ registerCommands(registry =>
                 const hereString =
                     Object.keys(com.Stream.JoinedPeople)
                         .join(', ')
-                const newChatTime = say(com, bot, hereString)
+                const newChatTime = chatSay(bot, com, hereString)
                 return { NewLastChatTime: newChatTime }
             }
         })
@@ -80,7 +80,7 @@ registerCommands(registry =>
                 const hereString =
                     Object.keys(com.Stream.Channel.People)
                         .join(', ')
-                const newChatTime = say(com, bot, hereString)
+                const newChatTime = chatSay(bot, com, hereString)
                 return { NewLastChatTime: newChatTime }
             }
         })

@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync } from 'fs'
 import { Client } from 'tmi.js'
 import { Channel, channelString, readChannel, twitchChannelString } from './channel/channel'
+import { ChatInfo } from './chatInfo'
 import { Command } from './command/command'
 import { createStream, Livestream } from './livestream'
 import { Arr, Record, Result } from './utils'
@@ -29,9 +30,9 @@ export const createBot = (): Result<Bot, string[]> => {
         },
         identity: {
             username: readFileSync('creds/twitchchannel', 'utf8'),
-            password: readFileSync('creds/oauth', 'utf8')
+            password: readFileSync('creds/oauth', 'utf8'),
         },
-        channels: [...channelList]
+        channels: [...channelList],
     })
 
     const channelsResult = Result.all(channelList.map(readChannel))
@@ -60,3 +61,6 @@ export const botSay = (channel: string, isMod: boolean, bot: Bot, message: strin
     }
     else return stream.LastChatTime
 }
+
+export const chatSay = (bot: Bot, chatInfo: ChatInfo, message: string, force: boolean = false) =>
+    botSay(chatInfo.ChannelString, chatInfo.IsMod, bot, message, force)

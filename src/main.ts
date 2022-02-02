@@ -1,15 +1,16 @@
 import clone from 'clone'
 import { stdin, stdout } from 'process'
 import readline from 'readline'
-import { Bot, botSay, createBot } from './bot'
+import { Bot, chatSay, createBot } from './bot'
 import { channelString, writeChannel } from './channel/channel'
 import { Alias, dealias } from './command/alias'
-import { Command, CommandInput, CommandResult } from './command/command'
+import { Command, CommandResult } from './command/command'
 import { collectCommands } from './command/register'
 import { delay, Result } from './utils'
 
 import './commands/commandRegisters'
 import './listeners/messageListeners'
+import { ChatInfo } from './chatInfo'
 
 let isRunning = false
 let commands: Record<string, Command>
@@ -74,7 +75,12 @@ const main = () => {
         if (self || userstate.username === undefined || userstate['message-type'] !== 'chat') return
 
         const channelStr = channelString(channel)
-        const isMod = userstate.mod || (channelStr === userstate.username)
+        const chatInfo: ChatInfo = {
+            ChannelString: channelStr,
+            Username: userstate.username,
+            IsMod: userstate.mod || (channelStr === userstate.username),
+            Stream: bot.Streams[channelStr],
+        }
 
         bot.Streams[channelStr].UserChatTimes[userstate.username] = Date.now()
         if (bot.Channels[channelStr].Options.gambling)
@@ -87,26 +93,21 @@ const main = () => {
 
             const [command, commandBody] = dealias(commands, aliases, [commandKey, body]) ?? []
             if (command && commandBody) {
-                const commandInput: CommandInput = {
-                    Username: userstate.username,
-                    IsMod: isMod,
-                    Stream: bot.Streams[channelStr]
-                }
                 // this breaks. idk why
                 // const botCopy = clone(bot, true)
                 const botCopy = bot
-                if (command.canRun(botCopy, commandInput)) {
-                    const commandResult = command.run(botCopy, commandInput, commandBody)
+                if (command.canRun(botCopy, chatInfo)) {
+                    const commandResult = command.run(botCopy, chatInfo, commandBody)
 
                     const handleResult = handleCommandResult(channelStr, commandResult)
                     if (!handleResult.IsOk) {
-                        if (isMod) botSay(channel, isMod, bot, `${userstate.username} Could not update stream.`)
+                        if (chatInfo.IsMod) chatSay(bot, chatInfo, `${userstate.username} Could not update stream.`)
                         console.log(`* ERROR: Could not update stream: ${handleResult.Error}`)
                     }
                 }
             }
             else {
-                if (isMod) botSay(channel, isMod, bot, `${userstate.username} command "${commandKey}" not found.`)
+                if (chatInfo.IsMod) chatSay(bot, chatInfo, `${userstate.username} command "${commandKey}" not found.`)
                 // console.error(`* ERROR: Command ${channelStr}:${commandKey} not found`)
             }
         }

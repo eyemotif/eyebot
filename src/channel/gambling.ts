@@ -15,20 +15,28 @@ export interface GambleInfo {
     Users: Record<string, number>
 }
 
-export type GambleResult = {
-    Status: 'ok'
-    User: string,
-    Roll: number,
-    Bet: number,
-    Difference: number
-} | {
-    Status: 'error'
-    Message: string
-}
+export type GambleResult =
+    | {
+        Status: 'ok'
+        User: string
+        Roll: number
+        Bet: number
+        Difference: number
+    }
+    | {
+        Status: 'error'
+        Message: string
+    }
 
 export type BetAmount =
-    | { kind: 'amount', amt: number }
-    | { kind: 'percentage', percent: number }
+    | {
+        kind: 'amount'
+        amt: number
+    }
+    | {
+        kind: 'percentage'
+        percent: number
+    }
     | { kind: 'all' }
     | { kind: 'min' }
     | { kind: 'max' }

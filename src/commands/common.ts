@@ -1,10 +1,9 @@
-import { Bot, botSay } from '../bot';
+import { Bot, chatSay } from '../bot';
 import { registerCommands } from '../command/register';
-import { CommandInput, CommandResult } from '../command/command';
 import { Record } from '../utils';
+import { ChatInfo } from '../chatInfo';
 
-const canRun = (_bot: Bot, _com: CommandInput) => true
-const say = (com: CommandInput, bot: Bot, message: string) => botSay(com.Stream.Channel.ChannelString, com.IsMod, bot, message)
+const canRun = (_bot: Bot, _com: ChatInfo) => true
 
 registerCommands(registry =>
     registry
@@ -16,7 +15,7 @@ registerCommands(registry =>
                         .filter(([_, command]) => command.canRun(bot, com))
                         .map(([key, _]) => key)
                         .join(', ')
-                const newChatTime = say(com, bot, `Commands: ${commandListString}.`)
+                const newChatTime = chatSay(bot, com, `Commands: ${commandListString}.`)
                 return { NewLastChatTime: newChatTime }
             }
         })
@@ -27,7 +26,7 @@ registerCommands(registry =>
                     Record.toPairs(com.Stream.JoinedPeople)
                         .map(([_, person]) => `- ${person.name}: ${person.pronouns}`)
                         .join(', ')
-                const newChatTime = say(com, bot, pronounsString)
+                const newChatTime = chatSay(bot, com, pronounsString)
                 return { NewLastChatTime: newChatTime }
             }
         })
@@ -35,12 +34,12 @@ registerCommands(registry =>
             canRun,
             run: (bot, com, _body) => {
                 if (com.Stream.Topic) {
-                    const newChatTime = say(com, bot, com.Stream.Topic)
+                    const newChatTime = chatSay(bot, com, com.Stream.Topic)
                     return { NewLastChatTime: newChatTime }
                 }
                 else {
                     if (com.IsMod) {
-                        const newChatTime = say(com, bot, `@${com.Username} no topic set.`)
+                        const newChatTime = chatSay(bot, com, `@${com.Username} no topic set.`)
                         return { NewLastChatTime: newChatTime }
                     }
                     else return {}

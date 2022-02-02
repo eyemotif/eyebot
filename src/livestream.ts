@@ -19,6 +19,6 @@ export const createStream = (channel: Channel): Livestream => {
         LastChatTime: 0,
         LastRewardTime: 0,
         Topic: undefined,
-        UserChatTimes: {}
+        UserChatTimes: {},
     }
 }
