@@ -2,6 +2,7 @@ import { Bot, chatSay } from '../bot'
 import { gamble, isValidBet, parseBetAmount, pointsNameString, setPoints } from '../channel/gambling'
 import { ChatInfo } from '../chatInfo'
 import { registerCommands } from '../command/register'
+import { Record } from '../utils'
 
 const canRun = (_bot: Bot, com: ChatInfo) => com.Stream.Channel.Options.gambling
 const canRunMod = (_bot: Bot, com: ChatInfo) => com.Stream.Channel.Options.gambling && com.IsMod
@@ -69,6 +70,20 @@ registerCommands(registry =>
                         return { NewLastChatTime: newChatTime }
                     }
                 }
+            }
+        })
+        .register('top', {
+            canRun,
+            run: (bot, com, _body) => {
+                const top =
+                    Record.toPairs(com.Stream.Channel.Gambling.Users)
+                        .sort(([_n1, v1], [_n2, v2]) => v1 - v2)
+                        .reverse()
+                        .slice(0, 10)
+                let newChatTime = 0
+                for (let i = 0; i < top.length; i++)
+                    newChatTime = chatSay(bot, com, `#${i + 1}: ${top[i][0]} (${top[i][1]})`, true)
+                return { NewLastChatTime: newChatTime }
             }
         })
         .register('givePoints', {
