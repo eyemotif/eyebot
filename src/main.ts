@@ -12,6 +12,7 @@ import { delay, Result } from './utils'
 
 import './commands/commandRegisters'
 import './listeners/messageListeners'
+import { GambleInfo, setPoints } from './channel/gambling'
 
 let isRunning = false
 let commands: Record<string, Command>
@@ -20,10 +21,34 @@ let bot: Bot
 
 const rl = readline.createInterface(stdin, stdout)
 
+const rewardPoints = (channel: string): Result<GambleInfo, string> => {
+    const now = Date.now()
+    let newGambleInfo = clone(bot.Streams[channel].Channel.Gambling)
+    const canRewardChannel = (now - bot.Streams[channel].LastRewardTime) >= bot.Channels[channel].Gambling.Info.chatRewardCooldown
+    if (canRewardChannel) {
+        for (const user in bot.Streams[channel].UserChatTimes) {
+            const canRewardUser = (now - bot.Streams[channel].UserChatTimes[user]) >= bot.Channels[channel].Gambling.Info.chatRewardCooldown
+            if (canRewardUser) {
+                const giveResult = setPoints(points => points + bot.Channels[channel].Gambling.Info.chatReward, user, newGambleInfo)
+                if (giveResult.IsOk)
+                    newGambleInfo = giveResult.Ok
+                else return Result.fromError(giveResult)
+            }
+        }
+    }
+    return Result.ok(newGambleInfo)
+}
+
 const runBotDaemon = async () => {
     while (isRunning) {
-        await delay(500)
+        await delay(250)
         for (const channel in bot.Channels) {
+            const rewardResult = rewardPoints(channel)
+            if (rewardResult.IsOk) {
+                bot.Streams[channel].Channel.Gambling = rewardResult.Ok
+                bot.Channels[channel].Gambling = rewardResult.Ok
+            }
+            else console.error(`* ERROR: Could not reward points: ${rewardResult.Error}`)
             writeChannel(bot.Channels[channel])
         }
     }
@@ -42,7 +67,6 @@ const handleCommandResult = (channelStr: string, commandResult: CommandResult): 
     }
     if (commandResult.NewGambling !== undefined) {
         // TODO: better GambleInfo update handling
-        // TODO: this doesn't actually update the bot's GambleInfo
         bot.Channels[channelStr].Gambling = commandResult.NewGambling
         bot.Streams[channelStr].Channel.Gambling = commandResult.NewGambling
     }
@@ -111,8 +135,8 @@ const main = () => {
                 }
             }
             else {
-                if (chatInfo.IsMod) chatSay(bot, chatInfo, `${userstate.username} command "${commandKey}" not found.`)
-                // console.error(`* ERROR: Command ${channelStr}:${commandKey} not found`)
+                if (chatInfo.IsMod)
+                    chatSay(bot, chatInfo, `${userstate.username} command "${commandKey}" not found.`)
             }
         }
         else listenAll(bot, chatInfo, message)
