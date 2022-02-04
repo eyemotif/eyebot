@@ -27,7 +27,7 @@ const rewardPoints = (channel: string): Result<GambleInfo, string> => {
     const canRewardChannel = (now - bot.Streams[channel].LastRewardTime) >= bot.Channels[channel].Gambling.Info.chatRewardCooldown
     if (canRewardChannel) {
         for (const user in bot.Streams[channel].UserChatTimes) {
-            const canRewardUser = (now - bot.Streams[channel].UserChatTimes[user]) >= bot.Channels[channel].Gambling.Info.chatRewardCooldown
+            const canRewardUser = (now - bot.Streams[channel].UserChatTimes[user]) <= bot.Channels[channel].Gambling.Info.chatRewardCooldown
             if (canRewardUser) {
                 const giveResult = setPoints(points => points + bot.Channels[channel].Gambling.Info.chatReward, user, newGambleInfo)
                 if (giveResult.IsOk)
@@ -35,6 +35,8 @@ const rewardPoints = (channel: string): Result<GambleInfo, string> => {
                 else return Result.fromError(giveResult)
             }
         }
+        // TODO: commit to mutating or not mutating
+        bot.Streams[channel].LastRewardTime = now
     }
     return Result.ok(newGambleInfo)
 }
