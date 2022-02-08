@@ -14,7 +14,7 @@ import './commands/commandRegisters'
 import './listeners/messageListeners'
 import { GambleInfo, setPoints } from './channel/gambling'
 
-let isRunning = false
+let isRunning = true
 let commands: Record<string, Command>
 let aliases: Record<string, Alias[]>
 let bot: Bot
@@ -87,7 +87,6 @@ const main = () => {
 
     bot.Client.connect()
         .then(_ => {
-            isRunning = true
             const [cmnds, aliss] = collectCommands()
             commands = cmnds
             aliases = aliss
@@ -119,7 +118,7 @@ const main = () => {
         if (message.startsWith(bot.Channels[channelStr].Options.commandPrefix)) {
             const split = message.trim().split(/ +/)
             const commandKey = split[0].substring(bot.Channels[channelStr].Options.commandPrefix.length)
-            const body = split.slice(1)
+            const body = split.slice(1).map(str => str.trim())
 
             const [command, commandBody] = dealias(commands, aliases, [commandKey, body]) ?? []
             if (command && commandBody) {
@@ -145,6 +144,7 @@ const main = () => {
     })
 
 }
+
 main()
 
 rl.on('line', line => {

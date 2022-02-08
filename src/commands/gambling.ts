@@ -80,9 +80,15 @@ registerCommands(registry =>
                         .sort(([_n1, v1], [_n2, v2]) => v1 - v2)
                         .reverse()
                         .slice(0, 10)
-                let newChatTime = 0
-                for (let i = 0; i < top.length; i++)
-                    newChatTime = chatSay(bot, com, `#${i + 1}: ${top[i][0]} (${top[i][1]})`, true)
+                // let newChatTime = 0
+                // for (let i = 0; i < top.length; i++)
+                // newChatTime = chatSay(bot, com, `#${i + 1}: ${top[i][0]}
+                // (${top[i][1]})`, true)
+                const topString =
+                    top
+                        .map(([nm, val], i) => `#${i + 1}: ${nm} (${val})`)
+                        .join(', ')
+                const newChatTime = chatSay(bot, com, topString)
                 return { NewLastChatTime: newChatTime }
             }
         })
