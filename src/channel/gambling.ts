@@ -125,7 +125,7 @@ export const gamble = (user: string, betAmount: BetAmount, gambling: GambleInfo)
             Message: `Not enough ${gambling.Info.pointNamePlur} (${userPoints}) to bet ${bet} ${pointsString(bet)}`
         }, gambling])
 
-    const roll = Math.floor(Math.random() * 101)
+    const roll = Math.floor(Math.random() * 101) + 1
     const multiplier = findMultiplier(roll, gambling)
 
     if (multiplier !== undefined) {

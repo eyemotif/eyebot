@@ -6,13 +6,16 @@ import { Person } from './person'
 
 const channelFileKeys = ['People', 'Options', 'Gambling', 'InfoCommands']
 
+export type People = Record<string, Person>
+export type InfoCommands = Record<string, string>
+
 export interface Channel {
     ChannelString: string
 
-    People: Record<string, Person>
+    People: People
     Options: ChannelOptions
     Gambling: GambleInfo
-    InfoCommands: Record<string, string>
+    InfoCommands: InfoCommands
 }
 
 export const readChannel = (channelStr: string): Result<Channel, string> => {

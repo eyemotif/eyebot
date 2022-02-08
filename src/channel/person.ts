@@ -1,6 +1,7 @@
 import clone from 'clone'
 import { Livestream } from '../livestream'
 import { Result } from '../utils'
+import { People } from './channel'
 
 export interface Person {
     id: string
@@ -8,7 +9,7 @@ export interface Person {
     pronouns: string
 }
 
-export const joinPerson = (personId: string, livestream: Livestream): Result<Record<string, Person>, string> => {
+export const joinPerson = (personId: string, livestream: Livestream): Result<People, string> => {
     if (!(personId in livestream.Channel.People))
         return Result.error(`Person "${personId}" not in channel "${livestream.Channel.ChannelString}"`)
     if (personId in livestream.JoinedPeople)
@@ -19,7 +20,7 @@ export const joinPerson = (personId: string, livestream: Livestream): Result<Rec
     return Result.ok(newJoinedPeople)
 }
 
-export const leavePerson = (personId: string, livestream: Livestream): Result<Record<string, Person>, string> => {
+export const leavePerson = (personId: string, livestream: Livestream): Result<People, string> => {
     if (!(personId in livestream.JoinedPeople))
         return Result.error(`Person "${personId}" not joined channel "${livestream.Channel.ChannelString}"`)
 

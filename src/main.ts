@@ -72,6 +72,14 @@ const handleCommandResult = (channelStr: string, commandResult: CommandResult): 
         bot.Channels[channelStr].Gambling = commandResult.NewGambling
         bot.Streams[channelStr].Channel.Gambling = commandResult.NewGambling
     }
+    if (commandResult.NewInfoCommands !== undefined) {
+        bot.Channels[channelStr].InfoCommands = commandResult.NewInfoCommands
+        bot.Streams[channelStr].Channel.InfoCommands = commandResult.NewInfoCommands
+    }
+    if (commandResult.NewPerson !== undefined) {
+        bot.Channels[channelStr].People[commandResult.NewPerson.id] = commandResult.NewPerson
+        bot.Streams[channelStr].Channel.People[commandResult.NewPerson.id] = commandResult.NewPerson
+    }
     return Result.ok(void 0)
 }
 
@@ -120,7 +128,7 @@ const main = () => {
             const commandKey = split[0].substring(bot.Channels[channelStr].Options.commandPrefix.length)
             const body = split.slice(1).map(str => str.trim())
 
-            const [command, commandBody] = dealias(commands, aliases, [commandKey, body]) ?? []
+            const [command, commandBody] = dealias(commands, bot.Streams[channelStr].Channel.InfoCommands, aliases, [commandKey, body]) ?? []
             if (command && commandBody) {
                 // this breaks. idk why
                 // const botCopy = clone(bot, true)

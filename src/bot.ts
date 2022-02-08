@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync } from 'fs'
+import { existsSync, readdirSync, readFileSync } from 'fs'
 import { Client } from 'tmi.js'
 import { Channel, channelString, readChannel, twitchChannelString } from './channel/channel'
 import { ChatInfo } from './chatInfo'
@@ -13,7 +13,39 @@ export interface Bot {
     Commands: Record<string, Command>
 }
 
+type Credentials = {
+    TwitchChannel: string
+    ClientID: string
+    OAuth: string
+}
+
+const getCredentials = (): Result<Credentials, string> => {
+    const filesList = ['creds/twitchchannel', 'creds/clientid', 'creds/oauth']
+
+    const filesNotExist =
+        filesList.filter(path => !existsSync(path))
+    if (filesNotExist.length > 0)
+        return Result.error(`Files ${filesNotExist.join(', ')} do not exist. Please see the readme on how to configure the bot.`)
+
+    const fileReads = filesList.map(path => readFileSync(path, 'utf8'))
+
+    const filesEmpty = fileReads.filter(file => file.trim().length === 0)
+    if (filesEmpty.length > 0)
+        return Result.error(`Files ${filesEmpty.join(', ')} are empty. Please see the readme on how to configure the bot.`)
+
+    return Result.ok({
+        TwitchChannel: fileReads[0],
+        ClientID: fileReads[1],
+        OAuth: fileReads[2]
+    })
+}
+
 export const createBot = (): Result<Bot, string[]> => {
+    const credsResult = getCredentials()
+    if (!credsResult.IsOk)
+        return Result.error([credsResult.Error])
+    const creds = credsResult.Ok
+
     const channelList =
         readdirSync('channels')
             .filter(path => /.+\.json/.test(path))
@@ -21,16 +53,16 @@ export const createBot = (): Result<Bot, string[]> => {
             .map(path => path.replace(/(.+)\.json/, '$1'))
 
     if (channelList.length === 0)
-        return Result.error(['Did not find any channels to create'])
+        return Result.error(['Did not find any channels to create. Please see the readme on how to configure the bot.'])
 
     const client = new Client({
         options: {
             debug: true,
-            clientId: readFileSync('creds/clientid', 'utf8'),
+            clientId: creds.ClientID,
         },
         identity: {
-            username: readFileSync('creds/twitchchannel', 'utf8'),
-            password: readFileSync('creds/oauth', 'utf8'),
+            username: creds.ClientID,
+            password: creds.OAuth,
         },
         channels: [...channelList],
     })

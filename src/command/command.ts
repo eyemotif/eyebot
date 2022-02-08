@@ -1,4 +1,5 @@
 import { Bot } from '../bot';
+import { InfoCommands, People } from '../channel/channel';
 import { GambleInfo } from '../channel/gambling';
 import { Person } from '../channel/person';
 import { ChatInfo } from '../chatInfo';
@@ -10,21 +11,17 @@ export interface Command {
 }
 
 export type CommandResult = {
-    NewJoinedPeople?: Record<string, Person>
+    NewJoinedPeople?: People
     NewLastChatTime?: number
     NewTopic?: string
     NewGambling?: GambleInfo
+    NewInfoCommands?: InfoCommands
+    NewPerson?: Person
 }
 
 export const escapeUnderscores = (message: string) => {
-    const nonEscapedPattern = /([^\\])_/
-    const escapedPattern = /\\_/
-    let result = message
+    const nonEscapedPattern = /([^\\])_/g
+    const escapedPattern = /\\_/g
 
-    while (nonEscapedPattern.test(result))
-        result = result.replace(nonEscapedPattern, '$1 ')
-    while (escapedPattern.test(result))
-        result = result.replace(escapedPattern, '_')
-
-    return result
+    return message.replace(nonEscapedPattern, '$1 ').replace(escapedPattern, '_')
 }

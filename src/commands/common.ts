@@ -14,6 +14,7 @@ registerCommands(registry =>
                     Record.toPairs(bot.Commands)
                         .filter(([_, command]) => command.canRun(bot, com))
                         .map(([key, _]) => key)
+                        .concat(Object.keys(com.Stream.Channel.InfoCommands))
                         .join(', ')
                 const newChatTime = chatSay(bot, com, `Commands: ${commandListString}.`)
                 return { NewLastChatTime: newChatTime }

@@ -17,7 +17,7 @@ export class MessageListener {
 
     public is(value: string, fn: (bot: Bot, chatInfo: ChatInfo) => void) {
         this.listeners.push((bot, chatInfo, message) => {
-            if (message.toLowerCase() == value.toLowerCase())
+            if (message.toLowerCase() === value.toLowerCase())
                 fn(bot, chatInfo)
         })
         return this
