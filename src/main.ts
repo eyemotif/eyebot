@@ -138,14 +138,14 @@ const main = () => {
 
                     const handleResult = handleCommandResult(channelStr, commandResult)
                     if (!handleResult.IsOk) {
-                        if (chatInfo.IsMod) chatSay(bot, chatInfo, `${userstate.username} Could not update stream.`)
+                        if (chatInfo.IsMod) chatSay(bot, chatInfo, `@${userstate.username} Could not update stream.`)
                         console.log(`* ERROR: Could not update stream: ${handleResult.Error}`)
                     }
                 }
             }
             else {
                 if (chatInfo.IsMod)
-                    chatSay(bot, chatInfo, `${userstate.username} command "${commandKey}" not found.`)
+                    chatSay(bot, chatInfo, `@${userstate.username} command "${commandKey}" not found.`)
             }
         }
         else listenAll(bot, chatInfo, message)

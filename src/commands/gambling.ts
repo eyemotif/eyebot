@@ -48,7 +48,7 @@ registerCommands(registry =>
                             const [result, newGambling] = gambleResult.Ok
                             if (result.Status === 'ok') {
                                 const pointsString = pointsNameString(com.Stream.Channel.Gambling)
-                                const gambleMessage = `${com.Username} bet ${result.Bet} ${pointsString(result.Bet)} and rolled a ${result.Roll}, ${result.Difference >= 0 ? 'winning' : 'losing'} ${Math.abs(result.Difference)} ${pointsString(Math.abs(result.Difference))}!`
+                                const gambleMessage = `@${com.Username} bet ${result.Bet} ${pointsString(result.Bet)} and rolled a ${result.Roll}, ${result.Difference >= 0 ? 'winning' : 'losing'} ${Math.abs(result.Difference)} ${pointsString(Math.abs(result.Difference))}!`
 
                                 const newChatTime = chatSay(bot, com, gambleMessage, true)
                                 return { NewGambling: newGambling, NewLastChatTime: newChatTime }
@@ -104,7 +104,7 @@ registerCommands(registry =>
                 const amount = parseInt(body[1])
 
                 if (isNaN(amount)) {
-                    const newChatTime = chatSay(bot, com, `${com.Username} Invalid ${com.Stream.Channel.Gambling.Info.pointNameSing} amount.`)
+                    const newChatTime = chatSay(bot, com, `@${com.Username} Invalid ${com.Stream.Channel.Gambling.Info.pointNameSing} amount.`)
                     return { NewLastChatTime: newChatTime }
                 }
 
