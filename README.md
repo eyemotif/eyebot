@@ -103,13 +103,13 @@ The contents of a channel.json file are:
 - `!commands`: Displays all the commands a user is able to execute.
 - `!pronouns`: Displays all joined users' names and pronouns.
 - `!topic`: Displays the stream's topic.
-- `!<info-command>`: Displays the body of the info command ([Info Commands](#info-commands)).
+- `!<info-command>`: Displays the body of the info command (see [Info Commands](#info-commands)).
 
 ### Info Commands
 
 Info Commands are a way to create channel-specific commands.  
-Currently, Info Commands just display strings, in the future there'll be more
-complicated formatting and different variables to use.
+Currently, Info Commands just display strings, but in the future there'll be
+more complicated formatting and different variables to use.
 
 ## Moderator Commands
 
@@ -125,8 +125,8 @@ complicated formatting and different variables to use.
   and adds it to the channel's list of joined people.
 - `!here`: Displays the list of all the ids of the stream's list of joined people.
 - `!people`: Displays the list of all the ids of the channel's list of people.
-- `!setinfo <info-command> <command_body...>`: Creates a new Info Command. See
-  ([Info Commands](#info-commands)).
+- `!setinfo <info-command> <command_body...>`: Creates a new Info Command (see
+  [Info Commands](#info-commands)).
 
 ## Gambling
 
@@ -181,7 +181,7 @@ To create a new command:
 ```
 
 The `bot` and `com` parameters are the info for the bot (of type `Bot`) and the
-chat message (of type `ChatInfo`). The `body` parameters are all the
+chat message/chatter (of type `ChatInfo`). The `body` parameters are all the
 space-separated words after the command.
 
 `canRun` is the function that returns a `boolean` depending on whether or not
@@ -232,12 +232,12 @@ To create a new listener:
 ```TypeScript
   registerListener(
     MessageListener.When()
-      .is('value', (bot, chatInfo) => void 0)
-      .contains('value', (bot, chatInfo) => void 0)
-      .matches(/pattern/, (bot, chatInfo) => void 0)
+      .is('value', (bot, chatInfo) => {})
+      .contains('value', (bot, chatInfo) => {})
+      .matches(/pattern/, (bot, chatInfo) => {})
   )
 ```
 
 - `is` fires if the message equals the `value`.
 - `contains` fires if the message contains the `value`.
-- `matches` fires if the messages matches the `pattern`.
+- `matches` fires if the message matches the `pattern`.
