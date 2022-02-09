@@ -164,6 +164,9 @@ rl.on('line', line => {
             }
             rl.close()
             break
+        case 'i':
+            console.dir(bot)
+            break
         default: break
     }
 })

@@ -1,7 +1,3 @@
-/*
-    Iris's Typescript Utility Functions
-    Updated on Jan 23 '22
-*/
 export type Result<TOk, TError> =
     | { IsOk: true, Ok: TOk }
     | { IsOk: false, Error: TError }
@@ -12,22 +8,6 @@ export const Result = {
     },
     error: <TOk, TError>(value: TError): Result<TOk, TError> => {
         return { IsOk: false, Error: value }
-    },
-    /** @deprecated since Jan 22 '22, use `.IsOk` instead */
-    isOk: (result: Result<any, any>) => result.IsOk,
-    /** @deprecated since Jan 22 '22, use `!.IsOk` instead */
-    isError: (result: Result<any, any>) => !result.IsOk,
-    /** @deprecated since Jan 22 '22, use `.IsOk` or `forceOk` instead */
-    getOk: <TOk, TError>(result: Result<TOk, TError>) => {
-        if (result.IsOk)
-            return result.Ok
-        else throw 'Result is not Ok'
-    },
-    /** @deprecated since Jan 22 '22, use `!.IsOk` or `forceError` instead */
-    getError: <TOk, TError>(result: Result<TOk, TError>) => {
-        if (!result.IsOk)
-            return result.Error
-        else throw 'Result is not Error'
     },
     forceOk: <TOk>(result: Result<TOk, any>) => {
         if (result.IsOk)
@@ -68,8 +48,6 @@ export const Result = {
             return Result.error(error as TError)
         }
     },
-    // maybeOk: <TOk, TError>(result: Result<TOk, TError>)=> result.Ok,
-    // maybeError: <TOk, TError>(result: Result<TOk, TError>) => result.Error 
     all: <TOk, TError>(results: Result<TOk, TError>[]): Result<TOk[], TError[]> => {
         const okMask = results.map(r => r.IsOk)
         if (okMask.reduce((acc, i) => acc || i))
@@ -124,26 +102,15 @@ export const Arr = {
 export const Obj = {
     hasKeys: (keys: string[], obj: any): boolean => {
         if (obj !== undefined && obj !== null) {
-            // const objKeys = Object.keys(obj)
-            // console.debug(obj, objKeys, keys)
-            // const mask = keys.map(objKeys.includes)
-            // return mask.reduce((acc, i) => acc && i)
             for (const key of keys)
                 if (!(key in obj)) return false
             return true
         }
         else return false
     },
-    /** @deprecated since Feb 1 '22 */
-    copy: <T>(obj: T): T => Object.assign({}, obj)
 }
 
 export const Record = {
-    // indexAll: <TKey extends string | number | symbol, TValue>(indexes:
-    // TKey[], record: Record<TKey, TValue>): TValue[] => indexes.map(i =>
-    // record[i])
-
-    // empty: <TKey extends string | number | symbol, TValue>(): Record<TKey, TValue> => ({} as Record<TKey, TValue>),
     toPairs: <TKey extends string | number | symbol, TValue>(record: Record<TKey, TValue>): [TKey, TValue][] => {
         let zip: [TKey, TValue][] = []
 

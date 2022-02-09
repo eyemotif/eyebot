@@ -29,6 +29,11 @@ Another Twitch bot, written in Typescript.
 - Run `npm start` to start the compiled Javascript code in Node.
 - `npm run watch` can also be used to run the compiler in watch mode.
 
+After starting the bot:
+
+- Typing `q` then `enter` will gracefully stop the bot.
+- Typing `i` then `enter` will print out the `bot` object.
+
 ## Credentials
 
 There are three files in the [creds](creds) folder that need to be created in order for
