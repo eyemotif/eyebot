@@ -115,6 +115,7 @@ const main = () => {
             Username: userstate.username,
             IsMod: userstate.mod || (channelStr === userstate.username),
             Stream: bot.Streams[channelStr],
+            Message: message,
         }
 
         bot.Streams[channelStr].UserChatTimes[userstate.username] = Date.now()

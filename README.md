@@ -88,6 +88,8 @@ The contents of a channel.json file are:
   - `nonModChatDelay` *(number)*: The number of ms that the bot will wait until
     it can respond to a non-mod user's chat message.
   - `commandPrefix` *(string)*: The string that indicates a chat message is a command.
+  - `locale` *(string)*: The [locale](https://stackoverflow.com/a/28357857) of
+    the stream. Defaults to en-US. *Can be removed.*
 
 # Using the Bot
 

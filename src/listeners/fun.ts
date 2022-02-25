@@ -37,10 +37,10 @@ registerListener(
             if (chatInfo.Stream.Channel.Options.fun)
                 chatSay(bot, chatInfo, `@${chatInfo.Username} gaymer*`)
         })
-        .contains('brain', (bot, chatInfo, _message) => {
-            if (chatInfo.Stream.Channel.Options.fun)
-                chatSay(bot, chatInfo, `@${chatInfo.Username} brian*`)
-        })
+        // .contains('brain', (bot, chatInfo, _message) => {
+        //     if (chatInfo.Stream.Channel.Options.fun)
+        //         chatSay(bot, chatInfo, `@${chatInfo.Username} brian*`)
+        // })
         .contains('cigarette', (bot, chatInfo, _message) => {
             if (chatInfo.Stream.Channel.Options.fun)
                 chatSay(bot, chatInfo, `@${chatInfo.Username} cig of rette*`)

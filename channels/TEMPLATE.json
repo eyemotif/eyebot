@@ -27,6 +27,7 @@
         "fun": true,
         "gambling": true,
         "nonModChatDelay": 5000,
-        "commandPrefix": "!"
+        "commandPrefix": "!",
+        "locale": "en-US"
     }
 }

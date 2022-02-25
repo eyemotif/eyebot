@@ -3,4 +3,5 @@ export type ChannelOptions = {
     gambling: boolean
     commandPrefix: string
     nonModChatDelay: number
+    locale?: string
 }

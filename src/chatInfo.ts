@@ -5,4 +5,5 @@ export type ChatInfo = {
     Username: string
     IsMod: boolean
     Stream: Livestream
+    Message: string
 }

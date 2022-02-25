@@ -1,6 +1,7 @@
 import { readFileSync, writeFileSync } from 'fs'
 import { Obj, Result, tryJSON } from '../utils'
 import { GambleInfo } from './gambling'
+import { InfoCommandEnvironment } from './infoCommand'
 import { ChannelOptions } from './options'
 import { Person } from './person'
 
@@ -11,6 +12,7 @@ export type InfoCommands = Record<string, string>
 
 export interface Channel {
     ChannelString: string
+    InfoCommandEnvironment: InfoCommandEnvironment
 
     People: People
     Options: ChannelOptions
@@ -24,6 +26,7 @@ export const readChannel = (channelStr: string): Result<Channel, string> => {
 
     if (Obj.hasKeys(channelFileKeys, channelObj)) {
         channelObj.ChannelString = channelString(channelStr)
+        channelObj.InfoCommandEnvironment = InfoCommandEnvironment.Create()
         return Result.ok(channelObj)
     }
     else
@@ -41,3 +44,5 @@ export const writeChannel = (channel: Channel) => {
 
 export const channelString = (rawChannel: string) => rawChannel.replace(/^#(.+)$/, '$1')
 export const twitchChannelString = (channel: string) => channel.replace(/^([^#])(.+)$/, '#$1$2')
+
+export const channelLocale = (channel: Channel) => channel.Options.locale ?? 'en-US'

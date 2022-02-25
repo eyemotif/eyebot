@@ -1,4 +1,5 @@
 import { Channel } from './channel/channel'
+import { InfoCommandEnvironment } from './channel/infoCommand'
 import { Person } from './channel/person'
 
 export type Livestream = {
