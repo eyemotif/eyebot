@@ -10,6 +10,7 @@ export class InfoCommandEnvironment {
     public static Create() {
         return new InfoCommandEnvironment()
             .variable('now', chat => (new Date()).toLocaleTimeString(channelLocale(chat.Stream.Channel)))
+            .variable('chatter', chat => chat.Username)
     }
     private constructor() {
         this.variables = {}

@@ -16,6 +16,7 @@ Another Twitch bot, written in Typescript.
 - [Modifying the Bot](#modifying-the-bot)
   - [Adding new Commands](#adding-new-commands)
   - [Adding new Listeners](#adding-new-listeners)
+  - [Adding new Info Command Variables](#adding-new-info-command-variables)
 
 # Setting up the Bot
 
@@ -115,8 +116,21 @@ The contents of a channel.json file are:
 ### Info Commands
 
 Info Commands are a way to create channel-specific commands.  
-Currently, Info Commands just display strings, but in the future there'll be
-more complicated formatting and different variables to use.
+
+Whatever is in the command body will be displayed whenever a user runs the
+command. Variables can be used to create commands that display useful
+information stored by the bot. 
+
+There are a few built-in variables:
+- `%now`: The current time where the bot is located. The date is formatted based
+  on the channel's `locale` option.
+- `%chatter`: The user that ran the command. Useful for @mentioning them.
+  
+- `%<num>` where `<num>` is a number: The num-th argument (zero-indexed) of the
+  command. For example, running `!command abc 123` would set `%0` to `abc` and
+  `%1` to `123`. Any `%<num>` with `<num>` out of bounds will display `%<num>`
+  as is.
+- `%%`: The whole body of the argument, underscore-escaped.
 
 ## Moderator Commands
 
@@ -248,3 +262,14 @@ To create a new listener:
 - `is` fires if the message equals the `value`.
 - `contains` fires if the message contains the `value`.
 - `matches` fires if the message matches the `pattern`.
+
+## Adding new Info Command Variables
+
+Currently, the only way to add a variable is to add the following line to
+[src/channel/infoCommand.ts](src/channel/infoCommand.ts):
+
+```TypeScript
+  .variable('chatter', chat => chat.Username)
+```
+
+I'll make a more modular solution soon™.
