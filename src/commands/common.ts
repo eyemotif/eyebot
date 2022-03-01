@@ -48,6 +48,6 @@ registerCommands(registry =>
             }
         })
 
-        .registerAlias('help', ([_key, _body]) => ['commands', []])
-        .registerAlias('today', ([_key, _body]) => ['topic', []])
+        .registerAlias('help', _ => ['commands', []])
+        .registerAlias('today', _ => ['topic', []])
 ) 

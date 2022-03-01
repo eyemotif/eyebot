@@ -120,5 +120,5 @@ registerCommands(registry =>
             }
         })
 
-        .registerAlias('bet', ([_key, body]) => ['gamble', body])
+        .registerAlias('bet', body => ['gamble', body])
 )

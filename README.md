@@ -221,7 +221,7 @@ You can also add aliases (these are chainable too):
 registerCommands(registry =>
     registry
       .registerAlias('aliasCommand',
-            ([key, body]) => [
+            body => [
                 'outputCommand',
                 ['outputBody']
             ])
@@ -231,8 +231,7 @@ registerCommands(registry =>
 Now, if `!aliasCommand` is run, `!outputCommand outputBody` will be ran instead.
 
 The alias function can be used to transform the command input in any way you
-like. If `!aliasCommand abc 123` is ran, then `key` would be `aliasCommand` and
-`body` would be `[abc, 123]`.
+like. If `!aliasCommand abc 123` is ran, then `body` would be `['abc', 123]`.
 
 ## Adding new Listeners
 

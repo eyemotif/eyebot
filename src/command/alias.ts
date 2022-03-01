@@ -2,7 +2,7 @@ import { chatSay } from '../bot'
 import { runInfoCommand } from '../channel/infoCommand'
 import { Command } from './command'
 
-export type Alias = (input: [string, string[]]) => [string, string[]] | undefined
+export type Alias = (input: string[]) => [string, string[]] | undefined
 
 export const dealias = (commands: Record<string, Command>, infoCommands: Record<string, string>, aliases: Record<string, Alias[]>, input: [string, string[]]): [Command, string[]] | undefined => {
     const [rawKey, body] = input
@@ -20,7 +20,7 @@ export const dealias = (commands: Record<string, Command>, infoCommands: Record<
         }, body]
     else if (aliases[key]) {
         for (const alias of aliases[key]) {
-            const aliasResult = alias([key, body])
+            const aliasResult = alias(body)
             if (aliasResult)
                 return dealias(commands, infoCommands, aliases, aliasResult)
         }
