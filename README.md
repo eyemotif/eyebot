@@ -113,9 +113,13 @@ The contents of a channel.json file are:
 - `!topic`: Displays the stream's topic.
 - `!<info-command>`: Displays the body of the info command (see [Info Commands](#info-commands)).
 
+- `!help` -> `!commands`
+- `!today` -> `!topic`
+
 ### Info Commands
 
-Info Commands are a way to create channel-specific commands.  
+Info Commands are a way to create channel-specific commands that can be ran by
+anyone.
 
 Whatever is in the command body will be displayed whenever a user runs the
 command. Variables can be used to create commands that display useful
@@ -148,6 +152,11 @@ There are a few built-in variables:
 - `!people`: Displays the list of all the ids of the channel's list of people.
 - `!setinfo <info-command> <command_body...>`: Creates a new Info Command (see
   [Info Commands](#info-commands)).
+- `!reminfo <info-command>`: Removes an Info Command (see [Info
+  Commands](#info-commands)).
+
+- `!ignorecommand <command>` -> `!setinfo <command>  ` (Displays nothing when
+  the command is run)
 
 ## Gambling
 

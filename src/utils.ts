@@ -14,7 +14,7 @@ export const Result = {
             return result.Ok
         else throw 'Result is not Ok'
     },
-    forceError: <TOk>(result: Result<TOk, any>) => {
+    forceError: <TError>(result: Result<any, TError>) => {
         if (!result.IsOk)
             return result.Error
         else throw 'Result is not Error'

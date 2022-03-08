@@ -127,4 +127,5 @@ registerCommands(registry =>
             }
         })
 
+        .registerAlias('ignoreCommand', body => ['setInfo', body.concat('')])
 )

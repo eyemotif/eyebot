@@ -1,18 +1,18 @@
+import './commands/commandRegisters'
+import './listeners/messageListeners'
+
 import clone from 'clone'
 import { stdin, stdout } from 'process'
 import readline from 'readline'
 import { Bot, chatSay, createBot } from './bot'
 import { channelString, writeChannel } from './channel/channel'
+import { GambleInfo, setPoints } from './channel/gambling'
 import { ChatInfo } from './chatInfo'
 import { Alias, dealias } from './command/alias'
 import { Command, CommandResult } from './command/command'
 import { collectCommands } from './command/register'
 import { listenAll } from './messageListener'
 import { delay, Result } from './utils'
-
-import './commands/commandRegisters'
-import './listeners/messageListeners'
-import { GambleInfo, setPoints } from './channel/gambling'
 
 let isRunning = true
 let commands: Record<string, Command>
