@@ -1,9 +1,8 @@
-import { Bot } from '../bot';
-import { InfoCommands, People } from '../channel/channel';
-import { GambleInfo } from '../channel/gambling';
-import { Person } from '../channel/person';
-import { ChatInfo } from '../chatInfo';
-import { Livestream } from '../livestream';
+import { Bot } from '../bot'
+import { InfoCommands, People } from '../channel/channel'
+import { GambleInfo } from '../channel/gambling'
+import { Person } from '../channel/person'
+import { ChatInfo } from '../chatInfo'
 
 export interface Command {
     canRun: (bot: Bot, com: ChatInfo) => boolean
@@ -17,6 +16,9 @@ export type CommandResult = {
     NewGambling?: GambleInfo
     NewInfoCommands?: InfoCommands
     NewPerson?: Person
+    NewQueue?: string
+    SetQueue?: { queueName: string, queue: string[] }
+    RemoveQueue?: string
 }
 
 export const escapeUnderscores = (message: string) => {

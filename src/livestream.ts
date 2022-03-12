@@ -1,6 +1,6 @@
 import { Channel } from './channel/channel'
-import { InfoCommandEnvironment } from './channel/infoCommand'
 import { Person } from './channel/person'
+import { Record } from './utils'
 
 export type Livestream = {
     Channel: Channel
@@ -9,6 +9,7 @@ export type Livestream = {
     LastRewardTime: number
     Topic: string | undefined
     UserChatTimes: Record<string, number>
+    Queues: Record<string, string[]>
 }
 
 export const createStream = (channel: Channel): Livestream => {
@@ -21,5 +22,6 @@ export const createStream = (channel: Channel): Livestream => {
         LastRewardTime: 0,
         Topic: undefined,
         UserChatTimes: {},
+        Queues: Record.fromPairs(channel.Queues.map(name => [name, []]))
     }
 }

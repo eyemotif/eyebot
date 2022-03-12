@@ -83,6 +83,8 @@ The contents of a channel.json file are:
     gambling system, and their points. **Should not be edited manually.**
 - `InfoCommands`: A dictionary that stores all the Info Commands associated with
   the channel. **Should not be edited manually.**
+- `Queues`: An array that stores all the names of the Queues associated with the
+  channel.
 - `Options`: Various channel-wide options for the bot.
   - `fun` *(boolean)*: Enables various fun commands and listeners.
   - `gambling` *(boolean)*: Enables gambling commands and functionality.
@@ -111,10 +113,14 @@ The contents of a channel.json file are:
 - `!commands`: Displays all the commands a user is able to execute.
 - `!pronouns`: Displays all joined users' names and pronouns.
 - `!topic`: Displays the stream's topic.
+- `!addtoqueue <queue-name> <content...>`: Adds an entry to a Queue (This
+  command is hard to use intentionally. Aliases should be created to fill in the
+  `<queue-name>` automatically).
 - `!<info-command>`: Displays the body of the info command (see [Info Commands](#info-commands)).
 
 - `!help` -> `!commands`
 - `!today` -> `!topic`
+- `!sr` -> `!addtoqueue songrequests`
 
 ### Info Commands
 
@@ -154,9 +160,15 @@ There are a few built-in variables:
   [Info Commands](#info-commands)).
 - `!reminfo <info-command>`: Removes an Info Command (see [Info
   Commands](#info-commands)).
+- `!nextqueue <queue-name>`: Removes and displays the next item in a Queue.
+- `!nextqueue <queue-name>`: Removes but does not display the next item in a Queue.
+- `!newqueue <queue-name>`: Creates a new Queue.
+- `!remqueue <queue-name>`: Removes a Queue.
 
 - `!ignorecommand <command>` -> `!setinfo <command>  ` (Displays nothing when
   the command is run)
+- `!nq` -> `!nextqueue`
+- `!skq` -> `!skipqueue`
 
 ## Gambling
 

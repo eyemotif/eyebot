@@ -1,7 +1,9 @@
-import { Bot, chatSay } from '../bot';
-import { registerCommands } from '../command/register';
-import { Record } from '../utils';
-import { ChatInfo } from '../chatInfo';
+import { Bot, chatSay } from '../bot'
+import { registerCommands } from '../command/register'
+import { Record } from '../utils'
+import { ChatInfo } from '../chatInfo'
+import { Queue } from '../queue'
+import { escapeUnderscores } from '../command/command'
 
 const canRun = (_bot: Bot, _com: ChatInfo) => true
 
@@ -47,7 +49,27 @@ registerCommands(registry =>
                 }
             }
         })
+        .register('addtoqueue', {
+            canRun,
+            run: (bot, com, body) => {
+                if (body.length < 2) {
+                    const newChatTime = chatSay(bot, com, `Usage: ${com.Stream.Channel.Options.commandPrefix}addtoqueue <queue-name> <content...>.`)
+                    return { NewLastChatTime: newChatTime }
+                }
+                const queue = com.Stream.Queues[body[0]]
+                if (queue === undefined) {
+                    if (com.IsMod) {
+                        const newChatTime = chatSay(bot, com, `@${com.Username} unknown queue \"${body[0]}\".`)
+                        return { NewLastChatTime: newChatTime }
+                    }
+                    else return {}
+                }
+                const newQueue = Queue.enqueue(escapeUnderscores(body.slice(1).join(' ')), queue)
+                return { SetQueue: { queueName: body[0], queue: newQueue } }
+            }
+        })
 
         .registerAlias('help', _ => ['commands', []])
         .registerAlias('today', _ => ['topic', []])
+        .registerAlias('sr', body => ['addtoqueue', ['songrequests'].concat(body)])
 ) 

@@ -23,6 +23,7 @@
         "Users": {}
     },
     "InfoCommands": {},
+    "Queues": [],
     "Options": {
         "fun": true,
         "gambling": true,

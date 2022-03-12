@@ -80,6 +80,17 @@ const handleCommandResult = (channelStr: string, commandResult: CommandResult): 
         bot.Channels[channelStr].People[commandResult.NewPerson.id] = commandResult.NewPerson
         bot.Streams[channelStr].Channel.People[commandResult.NewPerson.id] = commandResult.NewPerson
     }
+    if (commandResult.NewQueue !== undefined) {
+        bot.Channels[channelStr].Queues.push(commandResult.NewQueue)
+        bot.Streams[channelStr].Queues[commandResult.NewQueue] = []
+    }
+    if (commandResult.SetQueue !== undefined) {
+        bot.Streams[channelStr].Queues[commandResult.SetQueue.queueName] = commandResult.SetQueue.queue
+    }
+    if (commandResult.RemoveQueue !== undefined) {
+        delete bot.Streams[channelStr].Queues[commandResult.RemoveQueue]
+        bot.Channels[channelStr].Queues = bot.Channels[channelStr].Queues.filter(name => name !== commandResult.RemoveQueue)
+    }
     return Result.ok(void 0)
 }
 

@@ -4,6 +4,7 @@ import { joinPerson, leavePerson } from '../channel/person'
 import { ChatInfo } from '../chatInfo'
 import { escapeUnderscores } from '../command/command'
 import { registerCommands } from '../command/register'
+import { Queue } from '../queue'
 
 const canRun = (_bot: Bot, com: ChatInfo) => com.IsMod
 
@@ -126,6 +127,85 @@ registerCommands(registry =>
                 }
             }
         })
+        .register('nextqueue', {
+            canRun,
+            run: (bot, com, body) => {
+                if (body.length !== 1) {
+                    const newChatTime = chatSay(bot, com, `Usage: ${com.Stream.Channel.Options.commandPrefix}nextqueue <queue-name>.`)
+                    return { NewLastChatTime: newChatTime }
+                }
+                const queue = com.Stream.Queues[body[0]]
+                if (queue === undefined) {
+                    const newChatTime = chatSay(bot, com, `@${com.Username} unknown queue \"${body[0]}\".`)
+                    return { NewLastChatTime: newChatTime }
+                }
+                if (queue.length > 0) {
+                    const [next, newQueue] = Queue.dequeue(queue)
+                    const newChatTime = chatSay(bot, com, `@${com.Username} Next: \"${next}\"`)
+                    return { SetQueue: { queueName: body[0], queue: newQueue }, NewLastChatTime: newChatTime }
+                }
+                else {
+                    const newChatTime = chatSay(bot, com, `@${com.Username} Queue \"${body[0]}\" is empty!`)
+                    return { NewLastChatTime: newChatTime }
+                }
+            }
+        })
+        .register('skipqueue', {
+            canRun,
+            run: (bot, com, body) => {
+                if (body.length !== 1) {
+                    const newChatTime = chatSay(bot, com, `Usage: ${com.Stream.Channel.Options.commandPrefix}skipqueue <queue-name>.`)
+                    return { NewLastChatTime: newChatTime }
+                }
+                const queue = com.Stream.Queues[body[0]]
+                if (queue === undefined) {
+                    const newChatTime = chatSay(bot, com, `@${com.Username} unknown queue \"${body[0]}\".`)
+                    return { NewLastChatTime: newChatTime }
+                }
+                if (queue.length > 0) {
+                    const [_, newQueue] = Queue.dequeue(queue)
+                    return { SetQueue: { queueName: body[0], queue: newQueue } }
+                }
+                else {
+                    const newChatTime = chatSay(bot, com, `@${com.Username} Queue \"${body[0]}\" is empty.`)
+                    return { NewLastChatTime: newChatTime }
+                }
+            }
+        })
+        .register('newqueue', {
+            canRun,
+            run: (bot, com, body) => {
+                if (body.length !== 1) {
+                    const newChatTime = chatSay(bot, com, `Usage: ${com.Stream.Channel.Options.commandPrefix}newqueue <queue-name>.`)
+                    return { NewLastChatTime: newChatTime }
+                }
+                if (com.Stream.Queues[body[0]] === undefined) {
+                    return { NewQueue: body[0] }
+                }
+                else {
+                    const newChatTime = chatSay(bot, com, `@${com.Username} queue \"${body[0]}\" already exists.`)
+                    return { NewLastChatTime: newChatTime }
+                }
+            }
+        })
+        .register('remqueue', {
+            canRun,
+            run: (bot, com, body) => {
+                if (body.length !== 1) {
+                    const newChatTime = chatSay(bot, com, `Usage: ${com.Stream.Channel.Options.commandPrefix}remqueue <queue-name>.`)
+                    return { NewLastChatTime: newChatTime }
+                }
+                if (com.Stream.Queues[body[0]] !== undefined) {
+                    return { RemoveQueue: body[0] }
+                }
+                else {
+                    const newChatTime = chatSay(bot, com, `@${com.Username} queue \"${body[0]}\" does not exist.`)
+                    return { NewLastChatTime: newChatTime }
+                }
+            }
+        })
 
         .registerAlias('ignoreCommand', body => ['setInfo', body.concat('')])
+        .registerAlias('nq', body => ['nextqueue', body])
+        .registerAlias('skq', body => ['skipqueue', body])
 )
