@@ -14,8 +14,8 @@ export const dealias = (commands: Record<string, Command>, infoCommands: Record<
         return [{
             canRun: (_bot, _com) => true,
             run: (bot, com, body) => {
-                const newChatTime = chatSay(bot, com, runInfoCommand(com, body, infoCommands[key]))
-                return { NewLastChatTime: newChatTime }
+                const newChat = chatSay(bot, com, runInfoCommand(com, body, infoCommands[key]))
+                return { NewChat: newChat }
             }
         }, body]
     else if (aliases[key]) {

@@ -114,7 +114,7 @@ The contents of a channel.json file are:
 - `!pronouns`: Displays all joined users' names and pronouns.
 - `!topic`: Displays the stream's topic.
 - `!addtoqueue <queue-name> <content...>`: Adds an entry to a Queue (This
-  command is hard to use intentionally. Aliases should be created to fill in the
+  command is hard to use on purpose. Aliases should be created to fill in the
   `<queue-name>` automatically).
 - `!<info-command>`: Displays the body of the info command (see [Info Commands](#info-commands)).
 

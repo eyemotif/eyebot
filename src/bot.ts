@@ -83,15 +83,17 @@ export const createBot = (): Result<Bot, string[]> => {
     }, channelsResult)
 }
 
-export const botSay = (channel: string, isMod: boolean, bot: Bot, message: string, force: boolean = false): number => {
+export const botSay = (channel: string, isMod: boolean, bot: Bot, message: string, force: boolean = false): [number, string] => {
     const stream = bot.Streams[channelString(channel)]
     const now = Date.now()
 
-    if (force || isMod || ((now - stream.LastChatTime) >= stream.Channel.Options.nonModChatDelay)) {
+    const normalChatCondition = ((now - stream.LastChatTime) >= stream.Channel.Options.nonModChatDelay) && (message !== stream.LastBotChat)
+
+    if (force || isMod || normalChatCondition) {
         bot.Client.say(twitchChannelString(channel), message)
-        return now
+        return [now, message]
     }
-    else return stream.LastChatTime
+    else return [stream.LastChatTime, stream.LastBotChat]
 }
 
 export const chatSay = (bot: Bot, chatInfo: ChatInfo, message: string, force: boolean = false) =>

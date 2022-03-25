@@ -14,16 +14,16 @@ registerCommands(registry =>
             run: (bot, com, _body) => {
                 const points = com.Stream.Channel.Gambling.Users[com.Username]
                 const pointsString = pointsNameString(com.Stream.Channel.Gambling)(points)
-                const newChatTime = chatSay(bot, com, `@${com.Username} you have ${points} ${pointsString}.`, true)
-                return { NewLastChatTime: newChatTime }
+                const newChat = chatSay(bot, com, `@${com.Username} you have ${points} ${pointsString}.`, true)
+                return { NewChat: newChat }
             }
         })
         .register('gamble', {
             canRun,
             run: (bot, com, body) => {
                 if (body.length !== 1) {
-                    const newChatTime = chatSay(bot, com, `Usage: ${com.Stream.Channel.Options.commandPrefix}gamble <"help"|amount>.`)
-                    return { NewLastChatTime: newChatTime }
+                    const newChat = chatSay(bot, com, `Usage: ${com.Stream.Channel.Options.commandPrefix}gamble <"help"|amount>.`)
+                    return { NewChat: newChat }
                 }
 
                 if (body[0].toLowerCase() === 'help') {
@@ -35,10 +35,9 @@ registerCommands(registry =>
                         `min: bets the minimum amount of ${com.Stream.Channel.Gambling.Info.pointNamePlur} (or 1 ${com.Stream.Channel.Gambling.Info.pointNameSing} if no minimum is set).`,
                     ]
                         .map(line => `${com.Stream.Channel.Options.commandPrefix}gamble ${line}`)
-                    let newChatTime = 0
-                    for (const line of helpMessage)
-                        newChatTime = chatSay(bot, com, line, true)
-                    return { NewLastChatTime: newChatTime }
+                        .join(' ')
+                    let newChat = chatSay(bot, com, helpMessage, true)
+                    return { NewChat: newChat }
                 }
                 else {
                     const bet = parseBetAmount(body[0])
@@ -50,24 +49,24 @@ registerCommands(registry =>
                                 const pointsString = pointsNameString(com.Stream.Channel.Gambling)
                                 const gambleMessage = `@${com.Username} bet ${result.Bet} ${pointsString(result.Bet)} and rolled a ${result.Roll}, ${result.Difference >= 0 ? 'winning' : 'losing'} ${Math.abs(result.Difference)} ${pointsString(Math.abs(result.Difference))}!`
 
-                                const newChatTime = chatSay(bot, com, gambleMessage, true)
-                                return { NewGambling: newGambling, NewLastChatTime: newChatTime }
+                                const newChat = chatSay(bot, com, gambleMessage, true)
+                                return { NewGambling: newGambling, NewChat: newChat }
                             }
                             else {
-                                const newChatTime = chatSay(bot, com, `@${com.Username} ${result.Message}.`)
-                                return { NewLastChatTime: newChatTime }
+                                const newChat = chatSay(bot, com, `@${com.Username} ${result.Message}.`)
+                                return { NewChat: newChat }
                             }
                         }
                         else {
                             const gambleError = gambleResult.Error
-                            const newChatTime = chatSay(bot, com, `@${com.Username} Could not gamble.`, true)
+                            const newChat = chatSay(bot, com, `@${com.Username} Could not gamble.`, true)
                             console.error(`* ERROR: Could not gamble: ${gambleError}`)
-                            return { NewLastChatTime: newChatTime }
+                            return { NewChat: newChat }
                         }
                     }
                     else {
-                        const newChatTime = chatSay(bot, com, `@${com.Username} Invalid bet amount.`, true)
-                        return { NewLastChatTime: newChatTime }
+                        const newChat = chatSay(bot, com, `@${com.Username} Invalid bet amount.`, true)
+                        return { NewChat: newChat }
                     }
                 }
             }
@@ -80,32 +79,32 @@ registerCommands(registry =>
                         .sort(([_n1, v1], [_n2, v2]) => v1 - v2)
                         .reverse()
                         .slice(0, 10)
-                // let newChatTime = 0
+                // let newChat = 0
                 // for (let i = 0; i < top.length; i++)
-                // newChatTime = chatSay(bot, com, `#${i + 1}: ${top[i][0]}
+                // newChat = chatSay(bot, com, `#${i + 1}: ${top[i][0]}
                 // (${top[i][1]})`, true)
                 const topString =
                     top
                         .map(([nm, val], i) => `#${i + 1}: ${nm} (${val})`)
                         .join(', ')
-                const newChatTime = chatSay(bot, com, topString)
-                return { NewLastChatTime: newChatTime }
+                const newChat = chatSay(bot, com, topString)
+                return { NewChat: newChat }
             }
         })
         .register('givePoints', {
             canRun: canRunMod,
             run: (bot, com, body) => {
                 if (body.length !== 2) {
-                    const newChatTime = chatSay(bot, com, `Usage: ${com.Stream.Channel.Options.commandPrefix}givepoints <target> <amount>.`)
-                    return { NewLastChatTime: newChatTime }
+                    const newChat = chatSay(bot, com, `Usage: ${com.Stream.Channel.Options.commandPrefix}givepoints <target> <amount>.`)
+                    return { NewChat: newChat }
                 }
 
                 const target = body[0]
                 const amount = parseInt(body[1])
 
                 if (isNaN(amount)) {
-                    const newChatTime = chatSay(bot, com, `@${com.Username} Invalid ${com.Stream.Channel.Gambling.Info.pointNameSing} amount.`)
-                    return { NewLastChatTime: newChatTime }
+                    const newChat = chatSay(bot, com, `@${com.Username} Invalid ${com.Stream.Channel.Gambling.Info.pointNameSing} amount.`)
+                    return { NewChat: newChat }
                 }
 
                 const setPointResult = setPoints(points => points + amount, target, com.Stream.Channel.Gambling)
@@ -113,9 +112,9 @@ registerCommands(registry =>
                     return { NewGambling: setPointResult.Ok }
                 else {
                     const setPointError = setPointResult.Error
-                    const newChatTime = chatSay(bot, com, `@${com.Username} Could not give ${com.Stream.Channel.Gambling.Info.pointNamePlur}.`, true)
+                    const newChat = chatSay(bot, com, `@${com.Username} Could not give ${com.Stream.Channel.Gambling.Info.pointNamePlur}.`, true)
                     console.error(`* ERROR: Could not gamble: ${setPointError}`)
-                    return { NewLastChatTime: newChatTime }
+                    return { NewChat: newChat }
                 }
             }
         })

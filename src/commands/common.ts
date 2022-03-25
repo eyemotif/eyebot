@@ -18,8 +18,8 @@ registerCommands(registry =>
                         .map(([key, _]) => key)
                         .concat(Object.keys(com.Stream.Channel.InfoCommands))
                         .join(', ')
-                const newChatTime = chatSay(bot, com, `Commands: ${commandListString}.`)
-                return { NewLastChatTime: newChatTime }
+                const newChat = chatSay(bot, com, `Commands: ${commandListString}.`)
+                return { NewChat: newChat }
             }
         })
         .register('pronouns', {
@@ -29,21 +29,21 @@ registerCommands(registry =>
                     Record.toPairs(com.Stream.JoinedPeople)
                         .map(([_, person]) => `- ${person.name}: ${person.pronouns}`)
                         .join(', ')
-                const newChatTime = chatSay(bot, com, pronounsString)
-                return { NewLastChatTime: newChatTime }
+                const newChat = chatSay(bot, com, pronounsString)
+                return { NewChat: newChat }
             }
         })
         .register('topic', {
             canRun,
             run: (bot, com, _body) => {
                 if (com.Stream.Topic) {
-                    const newChatTime = chatSay(bot, com, com.Stream.Topic)
-                    return { NewLastChatTime: newChatTime }
+                    const newChat = chatSay(bot, com, com.Stream.Topic)
+                    return { NewChat: newChat }
                 }
                 else {
                     if (com.IsMod) {
-                        const newChatTime = chatSay(bot, com, `@${com.Username} no topic set.`)
-                        return { NewLastChatTime: newChatTime }
+                        const newChat = chatSay(bot, com, `@${com.Username} no topic set.`)
+                        return { NewChat: newChat }
                     }
                     else return {}
                 }
@@ -53,14 +53,14 @@ registerCommands(registry =>
             canRun,
             run: (bot, com, body) => {
                 if (body.length < 2) {
-                    const newChatTime = chatSay(bot, com, `Usage: ${com.Stream.Channel.Options.commandPrefix}addtoqueue <queue-name> <content...>.`)
-                    return { NewLastChatTime: newChatTime }
+                    const newChat = chatSay(bot, com, `Usage: ${com.Stream.Channel.Options.commandPrefix}addtoqueue <queue-name> <content...>.`)
+                    return { NewChat: newChat }
                 }
                 const queue = com.Stream.Queues[body[0]]
                 if (queue === undefined) {
                     if (com.IsMod) {
-                        const newChatTime = chatSay(bot, com, `@${com.Username} unknown queue \"${body[0]}\".`)
-                        return { NewLastChatTime: newChatTime }
+                        const newChat = chatSay(bot, com, `@${com.Username} unknown queue \"${body[0]}\".`)
+                        return { NewChat: newChat }
                     }
                     else return {}
                 }

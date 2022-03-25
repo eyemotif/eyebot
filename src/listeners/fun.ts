@@ -1,5 +1,5 @@
-import { chatSay } from '../bot';
-import { MessageListener, registerListener } from '../messageListener';
+import { chatSay } from '../bot'
+import { MessageListener, registerListener } from '../messageListener'
 
 const replace = (search: string, replaceWith: string, words: string[]) =>
     words
@@ -33,10 +33,10 @@ registerListener(
             if (chatInfo.Stream.Channel.Options.fun)
                 chatSay(bot, chatInfo, 'get rotated idiot 🔄')
         })
-        .contains('gamer', (bot, chatInfo, _message) => {
-            if (chatInfo.Stream.Channel.Options.fun)
-                chatSay(bot, chatInfo, `@${chatInfo.Username} gaymer*`)
-        })
+        // .contains('gamer', (bot, chatInfo, _message) => {
+        //     if (chatInfo.Stream.Channel.Options.fun)
+        //         chatSay(bot, chatInfo, `@${chatInfo.Username} gaymer*`)
+        // })
         // .contains('brain', (bot, chatInfo, _message) => {
         //     if (chatInfo.Stream.Channel.Options.fun)
         //         chatSay(bot, chatInfo, `@${chatInfo.Username} brian*`)

@@ -61,8 +61,9 @@ const handleCommandResult = (channelStr: string, commandResult: CommandResult): 
     if (commandResult.NewJoinedPeople !== undefined) {
         bot.Streams[channelStr].JoinedPeople = commandResult.NewJoinedPeople
     }
-    if (commandResult.NewLastChatTime !== undefined) {
-        bot.Streams[channelStr].LastChatTime = commandResult.NewLastChatTime
+    if (commandResult.NewChat !== undefined) {
+        bot.Streams[channelStr].LastChatTime = commandResult.NewChat[0]
+        bot.Streams[channelStr].LastBotChat = commandResult.NewChat[1]
     }
     if (commandResult.NewTopic !== undefined) {
         bot.Streams[channelStr].Topic = commandResult.NewTopic

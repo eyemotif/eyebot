@@ -11,7 +11,7 @@ export interface Command {
 
 export type CommandResult = {
     NewJoinedPeople?: People
-    NewLastChatTime?: number
+    NewChat?: [number, string]
     NewTopic?: string
     NewGambling?: GambleInfo
     NewInfoCommands?: InfoCommands

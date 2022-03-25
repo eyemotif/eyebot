@@ -10,6 +10,7 @@ export type Livestream = {
     Topic: string | undefined
     UserChatTimes: Record<string, number>
     Queues: Record<string, string[]>
+    LastBotChat: string
 }
 
 export const createStream = (channel: Channel): Livestream => {
@@ -22,6 +23,7 @@ export const createStream = (channel: Channel): Livestream => {
         LastRewardTime: 0,
         Topic: undefined,
         UserChatTimes: {},
-        Queues: Record.fromPairs(channel.Queues.map(name => [name, []]))
+        Queues: Record.fromPairs(channel.Queues.map(name => [name, []])),
+        LastBotChat: '',
     }
 }
