@@ -1,38 +1,44 @@
 import { Bot } from './bot'
 import { ChatInfo } from './chatInfo'
+import { CommandResult } from './command/command'
 import { Livestream } from './livestream'
 
 export class MessageListener {
     public static When() { return new MessageListener() }
-    public static Listen(bot: Bot, chatInfo: ChatInfo, message: string, messageListener: MessageListener) {
+    public static GetListens(bot: Bot, chatInfo: ChatInfo, message: string, messageListener: MessageListener) {
+        let listens = []
         for (const listener of messageListener.listeners)
-            listener(bot, chatInfo, message)
+            listens.push(() => listener(bot, chatInfo, message))
+        return listens
     }
 
-    private listeners: ((bot: Bot, chatInfo: ChatInfo, message: string) => void)[]
+    private listeners: ((bot: Bot, chatInfo: ChatInfo, message: string) => CommandResult)[]
 
     private constructor() {
         this.listeners = []
     }
 
-    public is(value: string, fn: (bot: Bot, chatInfo: ChatInfo) => void) {
+    public is(value: string, fn: (bot: Bot, chatInfo: ChatInfo) => CommandResult) {
         this.listeners.push((bot, chatInfo, message) => {
             if (message.toLowerCase() === value.toLowerCase())
-                fn(bot, chatInfo)
+                return fn(bot, chatInfo)
+            else return {}
         })
         return this
     }
-    public contains(value: string, fn: (bot: Bot, chatInfo: ChatInfo, message: string) => void) {
+    public contains(value: string, fn: (bot: Bot, chatInfo: ChatInfo, message: string) => CommandResult) {
         this.listeners.push((bot, chatInfo, message) => {
             if (message.toLowerCase().includes(value.toLowerCase()))
-                fn(bot, chatInfo, message)
+                return fn(bot, chatInfo, message)
+            else return {}
         })
         return this
     }
-    public matches(value: RegExp, fn: (bot: Bot, chatInfo: ChatInfo, message: string) => void) {
+    public matches(value: RegExp, fn: (bot: Bot, chatInfo: ChatInfo, message: string) => CommandResult) {
         this.listeners.push((bot, chatInfo, message) => {
             if (value.test(message))
-                fn(bot, chatInfo, message)
+                return fn(bot, chatInfo, message)
+            else return {}
         })
         return this
     }
@@ -43,7 +49,9 @@ let listeners: MessageListener[] = []
 export const registerListener = (listener: MessageListener) => {
     listeners.push(listener)
 }
-export const listenAll = (bot: Bot, chatInfo: ChatInfo, message: string) => {
+export const getAllListens = (bot: Bot, chatInfo: ChatInfo, message: string): (() => CommandResult)[] => {
+    let listens: (() => CommandResult)[][] = []
     for (const listener of listeners)
-        MessageListener.Listen(bot, chatInfo, message, listener)
+        listens.push(MessageListener.GetListens(bot, chatInfo, message, listener))
+    return listens.flat()
 }

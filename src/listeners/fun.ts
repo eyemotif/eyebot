@@ -9,46 +9,54 @@ const replace = (search: string, replaceWith: string, words: string[]) =>
         .trim()
 
 
-// TODO: update bot's last chat time in these
 registerListener(
     MessageListener.When()
         .is('egg', (bot, chatInfo) => {
             if (chatInfo.Stream.Channel.Options.fun)
-                chatSay(bot, chatInfo, '🥚')
+                return { NewChat: chatSay(bot, chatInfo, '🥚') }
+            else return {}
         })
         .is('...', (bot, chatInfo) => {
             if (chatInfo.Stream.Channel.Options.fun)
-                chatSay(bot, chatInfo, '...')
+                return { NewChat: chatSay(bot, chatInfo, '...') }
+            else return {}
         })
         .is('frong', (bot, chatInfo) => {
             if (chatInfo.Stream.Channel.Options.fun)
-                chatSay(bot, chatInfo, 'frong')
+                return { NewChat: chatSay(bot, chatInfo, 'frong') }
+            else return {}
         })
 
         .contains('bot_works', (bot, chatInfo, _message) => {
             if (chatInfo.Stream.Channel.Options.fun)
-                chatSay(bot, chatInfo, `This bot has no bugs :)`)
+                return { NewChat: chatSay(bot, chatInfo, `This bot has no bugs :)`) }
+            else return {}
         })
         .contains('get rotated', (bot, chatInfo, _message) => {
             if (chatInfo.Stream.Channel.Options.fun)
-                chatSay(bot, chatInfo, 'get rotated idiot 🔄')
+                return { NewChat: chatSay(bot, chatInfo, 'get rotated idiot 🔄') }
+            else return {}
         })
         // .contains('gamer', (bot, chatInfo, _message) => {
         //     if (chatInfo.Stream.Channel.Options.fun)
-        //         chatSay(bot, chatInfo, `@${chatInfo.Username} gaymer*`)
+        //         return {NewChat: chatSay(bot, chatInfo, `@${chatInfo.Username} gaymer*`)}
+        //         else return {}
         // })
         // .contains('brain', (bot, chatInfo, _message) => {
         //     if (chatInfo.Stream.Channel.Options.fun)
-        //         chatSay(bot, chatInfo, `@${chatInfo.Username} brian*`)
+        //         return {NewChat: chatSay(bot, chatInfo, `@${chatInfo.Username} brian*`)}
+        //     else return {}
         // })
         .contains('cigarette', (bot, chatInfo, _message) => {
             if (chatInfo.Stream.Channel.Options.fun)
-                chatSay(bot, chatInfo, `@${chatInfo.Username} cig of rette*`)
+                return { NewChat: chatSay(bot, chatInfo, `@${chatInfo.Username} cig of rette*`) }
+            else return {}
         })
         .contains('micro', (bot, chatInfo, message) => {
             if (chatInfo.Stream.Channel.Options.fun) {
                 const replaced = replace('micro', ' michael ', message.split(' '))
-                chatSay(bot, chatInfo, `@${chatInfo.Username} ${replaced}`)
+                return { NewChat: chatSay(bot, chatInfo, `@${chatInfo.Username} ${replaced}`) }
             }
+            else return {}
         })
 )

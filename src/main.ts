@@ -11,7 +11,7 @@ import { ChatInfo } from './chatInfo'
 import { Alias, dealias } from './command/alias'
 import { Command, CommandResult } from './command/command'
 import { collectCommands } from './command/register'
-import { listenAll } from './messageListener'
+import { getAllListens } from './messageListener'
 import { delay, Result } from './utils'
 
 let isRunning = true
@@ -161,7 +161,16 @@ const main = () => {
                     chatSay(bot, chatInfo, `@${userstate.username} command "${commandKey}" not found.`)
             }
         }
-        else listenAll(bot, chatInfo, message)
+        else {
+            const listens = getAllListens(bot, chatInfo, message)
+            for (const listen of listens) {
+                const listenResult = handleCommandResult(channelStr, listen())
+                if (!listenResult.IsOk) {
+                    console.log(`* ERROR: Could not update stream: ${listenResult.Error}`)
+                    break
+                }
+            }
+        }
     })
 
 }
