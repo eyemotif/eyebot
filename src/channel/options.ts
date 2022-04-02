@@ -4,4 +4,5 @@ export type ChannelOptions = {
     commandPrefix: string
     nonModChatDelay: number
     locale?: string
+    unknownCommandMessage: boolean
 }

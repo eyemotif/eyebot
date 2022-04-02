@@ -29,6 +29,7 @@
         "gambling": true,
         "nonModChatDelay": 5000,
         "commandPrefix": "!",
-        "locale": "en-US"
+        "locale": "en-US",
+        "unknownCommandMessage": true
     }
 }

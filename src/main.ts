@@ -157,7 +157,7 @@ const main = () => {
                 }
             }
             else {
-                if (chatInfo.IsMod)
+                if (chatInfo.IsMod && bot.Channels[channelStr].Options.unknownCommandMessage)
                     chatSay(bot, chatInfo, `@${userstate.username} command "${commandKey}" not found.`)
             }
         }
