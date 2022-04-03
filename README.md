@@ -90,9 +90,12 @@ The contents of a channel.json file are:
   - `gambling` *(boolean)*: Enables gambling commands and functionality.
   - `nonModChatDelay` *(number)*: The number of ms that the bot will wait until
     it can respond to a non-mod user's chat message.
-  - `commandPrefix` *(string)*: The string that indicates a chat message is a command.
+  - `commandPrefix` *(string)*: The string prefix that indicates a chat message
+    is a command.
   - `locale` *(string)*: The [locale](https://stackoverflow.com/a/28357857) of
     the stream. Defaults to en-US. *Can be removed.*
+  - `unknownCommandMessage` *(boolean)*: Enables the bot displaying a message
+    when a moderator or the streamer tries to execute an unknown command.
 
 # Using the Bot
 
