@@ -13,6 +13,7 @@ Another Twitch bot, written in Typescript.
     - [Info Commands](#info-commands)
   - [Moderator Commands](#moderator-commands)
   - [Gambling](#gambling)
+  - [Streamfun](#streamfun)
 - [Modifying the Bot](#modifying-the-bot)
   - [Adding new Commands](#adding-new-commands)
   - [Adding new Listeners](#adding-new-listeners)
@@ -80,11 +81,16 @@ The contents of a channel.json file are:
     associated with that key (*i.e., 1 will cause the user's total points to
     remain unchanged, and 0 will remove the bet from the user's total points*).
   - `Users`: A dictionary that stores all users associated with the channel's
-    gambling system, and their points. **Should not be edited manually.**
+    gambling system, and their points.
 - `InfoCommands`: A dictionary that stores all the Info Commands associated with
-  the channel. **Should not be edited manually.**
+  the channel.
 - `Queues`: An array that stores all the names of the Queues associated with the
   channel.
+- `StreamfunComponents`: **Still in development.** Keeps track of all the
+  Streamfun Components associated with the channel. Each entry keeps track of a
+  different kind of Component, and holds an array of the names of all Components
+  of that kind. See [Streamfun](#streamfun) for more info.
+    - `audio`: Audio clips.
 - `Options`: Various channel-wide options for the bot.
   - `fun` *(boolean)*: Enables various fun commands and listeners.
   - `gambling` *(boolean)*: Enables gambling commands and functionality.
@@ -96,6 +102,8 @@ The contents of a channel.json file are:
     the stream. Defaults to en-US. *Can be removed.*
   - `unknownCommandMessage` *(boolean)*: Enables the bot displaying a message
     when a moderator or the streamer tries to execute an unknown command.
+  - `streamfun` *(boolean)*: Enables Streamfun functionality. See
+    [Streamfun](#streamfun) for how to use it.
 
 # Using the Bot
 
@@ -194,6 +202,19 @@ Then, the user can run various commands to interact with the gambling system:
   in the `Gambling.Multipliers` field of the [channel.json file](#channeljson),
   the user is given back their points multiplied by some amount.
 - `!givepoints <user_name> <amount>` (*mod only*): Gives a user points.
+
+## Streamfun
+*All functionality in this section will be disabled if the `streamfun` option is
+set to `false`.*
+
+Streamfun is a program that I made to add custom functionality to a Twitch
+stream using a Browser Source in OBS. The program's github page can be found
+[here](https://github.com/eyemotif/streamfun). It's still in development, so I
+haven't written a guide on how exactly to use it yet. However, if you manage to
+figure it out, the commands should work:
+
+- `!sounds`: Lists all the sounds you can play.
+- `!<sound>`: Plays a sound.
 
 # Modifying the Bot
 

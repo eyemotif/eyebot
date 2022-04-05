@@ -24,12 +24,16 @@
     },
     "InfoCommands": {},
     "Queues": [],
+    "StreamfunComponents": {
+        "audio": []
+    },
     "Options": {
         "fun": true,
         "gambling": true,
         "nonModChatDelay": 5000,
         "commandPrefix": "!",
         "locale": "en-US",
-        "unknownCommandMessage": true
+        "unknownCommandMessage": true,
+        "streamfun": true
     }
 }

@@ -13,10 +13,12 @@
     "devDependencies": {
         "@types/clone": "^2.1.1",
         "@types/tmi.js": "^1.8.1",
+        "@types/ws": "^8.5.3",
         "ts-node": "^10.4.0"
     },
     "dependencies": {
         "clone": "^2.1.2",
-        "tmi.js": "^1.8.5"
+        "tmi.js": "^1.8.5",
+        "ws": "^8.5.0"
     }
 }

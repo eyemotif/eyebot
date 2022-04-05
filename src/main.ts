@@ -4,7 +4,7 @@ import './listeners/messageListeners'
 import clone from 'clone'
 import { stdin, stdout } from 'process'
 import readline from 'readline'
-import { Bot, chatSay, createBot } from './bot'
+import { Bot, botSay, chatSay, createBot } from './bot'
 import { channelString, writeChannel } from './channel/channel'
 import { GambleInfo, setPoints } from './channel/gambling'
 import { ChatInfo } from './chatInfo'
@@ -183,12 +183,22 @@ rl.on('line', line => {
             if (isRunning) {
                 isRunning = false
                 bot.Client.disconnect()
+                for (const stream in bot.Streams) {
+                    bot.Streams[stream].StreamfunConnection?.socket.close(1001)
+                }
             }
             rl.close()
             break
         case 'i':
             console.dir(bot)
             break
+        case 'b':
+            console.log('The next line will be broadcast to all channels. Input nothing to cancel.')
+            rl.once('line', message => {
+                if (message)
+                    for (const channel in Object.keys(bot.Channels))
+                        botSay(channel, true, bot, message)
+            })
         default: break
     }
 })

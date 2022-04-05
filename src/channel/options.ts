@@ -5,4 +5,5 @@ export type ChannelOptions = {
     nonModChatDelay: number
     locale?: string
     unknownCommandMessage: boolean
+    streamfun: boolean
 }

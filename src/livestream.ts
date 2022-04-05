@@ -1,5 +1,6 @@
 import { Channel } from './channel/channel'
 import { Person } from './channel/person'
+import { connectToStreamfunServer, StreamfunConnection } from './streamfun'
 import { Record } from './utils'
 
 export type Livestream = {
@@ -11,7 +12,16 @@ export type Livestream = {
     UserChatTimes: Record<string, number>
     Queues: Record<string, string[]>
     LastBotChat: string
+    StreamfunConnection: StreamfunConnection | undefined
 }
+
+// temporary until the streamfun functionality is better
+const defaultConnect = () =>
+    connectToStreamfunServer(
+        undefined,
+        err => console.error(`Streamfun error: ${err}`),
+        message => console.log(`Streamfun message: ${message}`)
+    )
 
 export const createStream = (channel: Channel): Livestream => {
     return {
@@ -25,5 +35,7 @@ export const createStream = (channel: Channel): Livestream => {
         UserChatTimes: {},
         Queues: Record.fromPairs(channel.Queues.map(name => [name, []])),
         LastBotChat: '',
+        StreamfunConnection:
+            channel.Options.streamfun ? defaultConnect() : undefined,
     }
 }
