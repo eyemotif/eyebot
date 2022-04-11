@@ -1,5 +1,6 @@
 import './commands/commandRegisters'
 import './listeners/messageListeners'
+import './twitch-api/event/events'
 
 import clone from 'clone'
 import { stdin, stdout } from 'process'
@@ -13,6 +14,8 @@ import { Command, CommandResult } from './command/command'
 import { collectCommands } from './command/register'
 import { getAllListens } from './messageListener'
 import { delay, Result } from './utils'
+import { connectToStreamfunServer } from './streamfun'
+import { closeEventListener, collectSubs } from './twitch-api/events'
 
 let isRunning = true
 let commands: Record<string, Command>
@@ -96,83 +99,86 @@ const handleCommandResult = (channelStr: string, commandResult: CommandResult): 
 }
 
 const main = () => {
-    const botResult = createBot()
-    if (!botResult.IsOk) {
-        const botError = botResult.Error
-        for (const error of botError)
-            console.error(`ERROR while creating bot: ${error}`)
-        return
-    }
-    bot = botResult.Ok
-
-    bot.Client.connect()
-        .then(_ => {
-            const [cmnds, aliss] = collectCommands()
-            commands = cmnds
-            aliases = aliss
-            bot.Commands = clone(commands)
-            runBotDaemon()
-        })
-        .catch(reason => {
-            // bot.Client.disconnect()
-            console.error(`ERROR while trying to connect: ${reason}`)
-        })
-
-    bot.Client.on('message', (channel, userstate, message, self) => {
-        if (self || userstate.username === undefined || userstate['message-type'] !== 'chat') return
-
-        const channelStr = channelString(channel)
-        const chatInfo: ChatInfo = {
-            ChannelString: channelStr,
-            Username: userstate.username,
-            IsMod: userstate.mod || (channelStr === userstate.username),
-            Stream: bot.Streams[channelStr],
-            Message: message,
+    createBot().then(botResult => {
+        if (!botResult.IsOk) {
+            const botError = botResult.Error
+            for (const error of botError)
+                console.error(`ERROR while creating bot: ${error}`)
+            return
         }
+        bot = botResult.Ok
 
-        bot.Streams[channelStr].UserChatTimes[userstate.username] = Date.now()
-        if (bot.Channels[channelStr].Options.gambling) {
-            if (bot.Channels[channelStr].Gambling.Users[userstate.username] === undefined)
-                bot.Channels[channelStr].Gambling.Users[userstate.username] = 0
-        }
+        bot.Client.connect()
+            .then(_ => {
+                const [cmnds, aliss] = collectCommands()
+                commands = cmnds
+                aliases = aliss
+                bot.Commands = clone(commands)
 
-        if (message.startsWith(bot.Channels[channelStr].Options.commandPrefix)) {
-            const split = message.trim().split(/ +/)
-            const commandKey = split[0].substring(bot.Channels[channelStr].Options.commandPrefix.length)
-            const body = split.slice(1).map(str => str.trim())
+                // collectSubs(bot)
 
-            const [command, commandBody] = dealias(commands, bot.Streams[channelStr].Channel.InfoCommands, aliases, [commandKey, body]) ?? []
-            if (command && commandBody) {
-                // this breaks. idk why
-                // const botCopy = clone(bot, true)
-                const botCopy = bot
-                if (command.canRun(botCopy, chatInfo)) {
-                    const commandResult = command.run(botCopy, chatInfo, commandBody)
+                runBotDaemon()
+            })
+            .catch(reason => {
+                // bot.Client.disconnect()
+                console.error(`ERROR while trying to connect: ${reason}`)
+            })
 
-                    const handleResult = handleCommandResult(channelStr, commandResult)
-                    if (!handleResult.IsOk) {
-                        if (chatInfo.IsMod) chatSay(bot, chatInfo, `@${userstate.username} Could not update stream.`)
-                        console.log(`* ERROR: Could not update stream: ${handleResult.Error}`)
+        bot.Client.on('message', (channel, userstate, message, self) => {
+            if (self || userstate.username === undefined || userstate['message-type'] !== 'chat') return
+
+            const channelStr = channelString(channel)
+            const chatInfo: ChatInfo = {
+                ChannelString: channelStr,
+                Username: userstate.username,
+                IsMod: userstate.mod || (channelStr === userstate.username),
+                Stream: bot.Streams[channelStr],
+                Message: message,
+            }
+
+            bot.Streams[channelStr].UserChatTimes[userstate.username] = Date.now()
+            if (bot.Channels[channelStr].Options.gambling) {
+                if (bot.Channels[channelStr].Gambling.Users[userstate.username] === undefined)
+                    bot.Channels[channelStr].Gambling.Users[userstate.username] = 0
+            }
+
+            if (message.startsWith(bot.Channels[channelStr].Options.commandPrefix)) {
+                const split = message.trim().split(/ +/)
+                const commandKey = split[0].substring(bot.Channels[channelStr].Options.commandPrefix.length)
+                const body = split.slice(1).map(str => str.trim())
+
+                const [command, commandBody] = dealias(commands, bot.Streams[channelStr].Channel.InfoCommands, aliases, [commandKey, body]) ?? []
+                if (command && commandBody) {
+                    // this breaks. idk why
+                    // const botCopy = clone(bot, true)
+                    const botCopy = bot
+                    if (command.canRun(botCopy, chatInfo)) {
+                        const commandResult = command.run(botCopy, chatInfo, commandBody)
+
+                        const handleResult = handleCommandResult(channelStr, commandResult)
+                        if (!handleResult.IsOk) {
+                            if (chatInfo.IsMod) chatSay(bot, chatInfo, `@${userstate.username} Could not update stream.`)
+                            console.log(`* ERROR: Could not update stream: ${handleResult.Error}`)
+                        }
                     }
+                }
+                else {
+                    if (chatInfo.IsMod && bot.Channels[channelStr].Options.unknownCommandMessage)
+                        chatSay(bot, chatInfo, `@${userstate.username} command "${commandKey}" not found.`)
                 }
             }
             else {
-                if (chatInfo.IsMod && bot.Channels[channelStr].Options.unknownCommandMessage)
-                    chatSay(bot, chatInfo, `@${userstate.username} command "${commandKey}" not found.`)
-            }
-        }
-        else {
-            const listens = getAllListens(bot, chatInfo, message)
-            for (const listen of listens) {
-                const listenResult = handleCommandResult(channelStr, listen())
-                if (!listenResult.IsOk) {
-                    console.log(`* ERROR: Could not update stream: ${listenResult.Error}`)
-                    break
+                const listens = getAllListens(bot, chatInfo, message)
+                for (const listen of listens) {
+                    const listenResult = handleCommandResult(channelStr, listen())
+                    if (!listenResult.IsOk) {
+                        console.log(`* ERROR: Could not update stream: ${listenResult.Error}`)
+                        break
+                    }
                 }
             }
-        }
+        })
     })
-
 }
 
 main()
@@ -184,8 +190,9 @@ rl.on('line', line => {
                 isRunning = false
                 bot.Client.disconnect()
                 for (const stream in bot.Streams) {
-                    bot.Streams[stream].StreamfunConnection?.socket.close(1001)
+                    bot.Streams[stream].StreamfunConnection?.socket.close(1001, 'Bot is stopping.')
                 }
+                closeEventListener()
             }
             rl.close()
             break
@@ -199,6 +206,12 @@ rl.on('line', line => {
                     for (const channel in Object.keys(bot.Channels))
                         botSay(channel, true, bot, message)
             })
+            break
+        case 'reconnect':
+            for (const stream in bot.Streams) {
+                bot.Streams[stream].StreamfunConnection =
+                    connectToStreamfunServer(undefined, err => console.error(err), () => { })
+            }
         default: break
     }
 })

@@ -14,6 +14,7 @@ Another Twitch bot, written in Typescript.
   - [Moderator Commands](#moderator-commands)
   - [Gambling](#gambling)
   - [Streamfun](#streamfun)
+- [Twitch API Integration](#twitch-api-integration)
 - [Modifying the Bot](#modifying-the-bot)
   - [Adding new Commands](#adding-new-commands)
   - [Adding new Listeners](#adding-new-listeners)
@@ -23,7 +24,7 @@ Another Twitch bot, written in Typescript.
 
 ## Building and Running
 
-- Create the files listed in creds/.gitignore. For what to put in them,
+- Create the files listed in [creds/.gitignore](creds/.gitignore). For what to put in them,
   see [credentials](#credentials).
 - Create (channel).json for each channel the bot should connect to. For what to
   put in them, see [channels](#channels).
@@ -41,9 +42,9 @@ After starting the bot:
 There are three files in the [creds](creds) folder that need to be created in order for
 the bot to work. A single line of text should be put in each file:
 
-- twitchchannel: The twitch channel you're using to run the bot.
-- clientid: The Client ID of your Twitch app.
-- oauth: The OAuth key of your Twitch app.
+- `twitchchannel`: The twitch channel you're using to run the bot.
+- `clientid`: The Client ID of your Twitch app.
+- `oauth`: The [OAuth key](https://twitchapps.com/tmi/) of your Twitch app.
 
 ## Channels
 
@@ -104,6 +105,8 @@ The contents of a channel.json file are:
     when a moderator or the streamer tries to execute an unknown command.
   - `streamfun` *(boolean)*: Enables Streamfun functionality. See
     [Streamfun](#streamfun) for how to use it.
+  - `twitchApi` *(boolean)*: Enables advanced interaction with the Twitch API.
+    See [Twitch API Integration](#twitch-api-integration) for details.
 
 # Using the Bot
 
@@ -216,7 +219,28 @@ figure it out, the commands should work:
 - `!sounds`: Lists all the sounds you can play.
 - `!<sound>`: Plays a sound.
 
+# Twitch API Integration
+*All functionality in this section will be disabled if the `twitchapi` option is
+set to `false`.*
+
+To interact with more than just a channel's chat, a few extra pieces of
+authentification are needed in  to interact witht the Twitch API:
+
+- `authcode`: The code returned when getting an [Authorization code grant
+  flow.](https://dev.twitch.tv/docs/authentication/getting-tokens-oauth#authorization-code-grant-flow).
+  Used for generating access tokens. The bot currently uses the following scopes:
+  - channel:read:redemptions
+- `clientsecret`: The client secret. Used for generating and refreshing access
+  tokens.
+- `redirecturi`: Any of the URIs listed in your app's "OAuth Redirect URLs" section.
+
+If the above files exist and have text in them, the bot will assume that Twitch
+API integration is enabled and will attempt to create, validate, and refresh
+access tokens.
+
 # Modifying the Bot
+
+Modifying the bot requires you to know a little bit of TypeScript.
 
 ## Adding new Commands
 

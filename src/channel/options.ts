@@ -6,4 +6,5 @@ export type ChannelOptions = {
     locale?: string
     unknownCommandMessage: boolean
     streamfun: boolean
+    twitchApi: boolean
 }

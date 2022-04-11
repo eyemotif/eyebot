@@ -145,3 +145,5 @@ export const tryJSON = (str: string): any | undefined => {
         return undefined
     }
 }
+
+export const promiseTuple = <T, TProm>(val: [T, Promise<TProm>]): Promise<[T, TProm]> => val[1].then(result => [val[0], result])

@@ -21,10 +21,15 @@ registerCommands(registry =>
         .register('sounds', {
             canRun,
             run: (bot, com) => {
-                const newChat = chatSay(bot, com, 'Sounds: !warpstar !boom')
+                const newChat = chatSay(bot, com, 'Sounds: !warpstar !boom !thankyou !powerup !treasure !cheer !bonk')
                 return { NewChat: newChat }
             }
         })
         .register('warpstar', audioCommand('warpstar'))
         .register('boom', audioCommand('vineboom'))
+        .register('thankyou', audioCommand('thankyou'))
+        .register('powerup', audioCommand('pwup'))
+        .register('treasure', audioCommand('treasure'))
+        .register('cheer', audioCommand('cheer'))
+        .register('bonk', audioCommand('bonk'))
 )
