@@ -34,6 +34,7 @@
         "commandPrefix": "!",
         "locale": "en-US",
         "unknownCommandMessage": true,
-        "streamfun": true
+        "streamfun": true,
+        "twitchApi": true
     }
 }

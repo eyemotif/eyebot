@@ -1,6 +1,13 @@
 import { WebSocket } from 'ws'
 import { delay } from '../utils'
 
+const cancelableDelay = async (ms: number, checkCancel: () => boolean, resolution: number = 100) => {
+    for (let timeWaited = 0; timeWaited <= ms; timeWaited += resolution) {
+        await delay(resolution)
+        if (checkCancel()) return
+    }
+}
+
 export class TwitchPubSub {
     private socket: WebSocket
     private queue: string[]
@@ -12,18 +19,21 @@ export class TwitchPubSub {
 
     private queueSenderFn = () => {
         if (this.open) {
-            if (!this.reconnecting && this.socket.readyState === this.socket.OPEN && this.queue.length > 0)
-                this.socket.send(this.queue.pop())
+            if (!this.reconnecting && this.socket.readyState === this.socket.OPEN && this.queue.length > 0) {
+                const next = this.queue.pop()
+                this.socket.send(next)
+            }
             this.queueSenderPromise = delay(10).then(this.queueSenderFn)
         }
     }
 
     private pingSender = async (): Promise<void> => {
         if (this.open) {
-            await delay(300000 + Math.floor(Math.random() * 10000))
+            await cancelableDelay(300000 + Math.floor(Math.random() * 10000), () => !this.open)
+
             this.pingResponse = false
             this.sendPriority(JSON.stringify({ type: 'PING' }))
-            await delay(10000)
+            await cancelableDelay(10000, () => !this.open)
             if (!this.pingResponse)
                 this.sendPriority(JSON.stringify({ type: 'RECONNECT' }))
             return await (this.pingSenderPromise = this.pingSender())
@@ -83,5 +93,6 @@ export class TwitchPubSub {
 
     public close(reason: string, code: number = 1000) {
         this.socket.close(code, reason)
+        this.open = false
     }
 }

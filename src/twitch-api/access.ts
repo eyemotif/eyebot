@@ -9,7 +9,7 @@ export const requestToken = async (clientId: string, clientSecret: string, code:
         grant_type: 'authorization_code',
         redirect_uri: redirectUri
     }
-    const request = await postHttps('id.twitch.tv', '/oauth2/token', query)
+    const request = await postHttps('id.twitch.tv', '/oauth2/token', {}, query)
     return Result.map(requestJSON => {
         return {
             Access: requestJSON['access_token'],

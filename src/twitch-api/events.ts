@@ -1,15 +1,32 @@
 import { Bot } from '../bot'
 import { Livestream } from '../livestream'
 import { ChannelPointReward, getIdFromChannelName, twitchAPI } from './api'
-import { responseResult, TwitchError } from './common'
+import { responseResult } from './common'
 import { TwitchPubSub } from './pubsub'
+
+type PopulationInfo = {
+    ChannelPoints: boolean
+}
+
+export type ChannelPointCallback = (stream: Livestream, bot: Bot, username: string, input: string | undefined) => void
 
 export class BotEventListener {
     private bot: Bot
     private pubSub: TwitchPubSub
     private channelIDs: Record<string, string> = {} // convert from id to name
-    private channelPointRewards: Record<string, [ChannelPointReward, (stream: Livestream, bot: Bot, username: string) => void][]> = {}
+    private channelPointRewards: Record<string, [ChannelPointReward, ChannelPointCallback][]> = {}
     private accessToken: string
+    private channelsNotPopulated: Record<string, PopulationInfo> = {}
+    public onReady = () => { }
+
+    cleanNotPopulatedList = () => {
+        for (const channel in this.channelsNotPopulated) {
+            const info = this.channelsNotPopulated[channel]
+            if (info.ChannelPoints) delete this.channelsNotPopulated[channel]
+        }
+        if (Object.keys(this.channelsNotPopulated).length === 0)
+            this.onReady()
+    }
 
     constructor(bot: Bot) {
         this.bot = bot
@@ -18,16 +35,17 @@ export class BotEventListener {
             if (json['type'] === 'RESPONSE') {
                 if (json['error'])
                     throw `Error in response ${json['nonce']}: "${json['error']}"`
-                else console.log(`Listened to ${json['nonce']}.`)
+                // else console.debug(`Listened to ${json['nonce']}.`)
             }
+            // else console.dir(json)
 
             // channel point reward redemption
-            if (json['data']?.redemption) {
-                const redemption = json['data']['redemption']
+            if (json['data']?.['topic']?.startsWith('channel-points')) {
+                const redemption = JSON.parse(json['data']['message'])['data']['redemption']
                 const channel = this.channelIDs[redemption['channel_id']]
                 for (const [reward, fn] of this.channelPointRewards[channel]) {
                     if (reward.ID === redemption['reward']['id']) {
-                        fn(bot.Streams[channel], bot, redemption['user']['login'])
+                        fn(bot.Streams[channel], bot, redemption['user']['login'], redemption['user_input'])
                         break
                     }
                 }
@@ -35,11 +53,17 @@ export class BotEventListener {
         }, err => console.error(`Event Listener error: ${err}`))
 
         if (!bot.Tokens.TwitchApi)
-            throw ''
+            throw 'Twitch API Tokens not set.'
         this.accessToken = bot.Tokens.Access
+
+        this.pubSub.start()
 
         for (const channel in this.bot.Channels) {
             if (this.bot.Channels[channel].Options.twitchApi) {
+                this.channelsNotPopulated[channel] = {
+                    ChannelPoints: false
+                }
+
                 getIdFromChannelName(this.bot, channel).then(idResult => {
                     if (idResult.IsOk) {
                         const idOk = idResult.Ok
@@ -56,7 +80,9 @@ export class BotEventListener {
                             const result = responseResult(JSON.parse(response))
                             if (result.IsOk) {
                                 this.channelPointRewards[channel] =
-                                    result.Ok['data'].map((el: any) => [{ Name: el.title, ID: el.id }, () => { }])
+                                    result.Ok['data'].map((el: any) => [{ Name: el['title'], ID: el['id'] }, () => { }])
+                                this.channelsNotPopulated[channel].ChannelPoints = true
+                                this.cleanNotPopulatedList()
                             }
                             else throw result.Error
                         })
@@ -82,7 +108,7 @@ export class BotEventListener {
         this.pubSub.close('Event listener closing.')
     }
 
-    public onChannelPointReward(channel: string, rewardName: string, callback: (stream: Livestream, bot: Bot, username: string) => void) {
+    public onChannelPointReward(channel: string, rewardName: string, callback: ChannelPointCallback) {
         const channelPointRewards = this.channelPointRewards[channel]
         if (channelPointRewards) {
             for (let i = 0; i < channelPointRewards.length; i++) {
@@ -105,8 +131,11 @@ export const sub = (fn: (listener: BotEventListener) => BotEventListener) => {
 }
 export const collectSubs = (bot: Bot) => {
     eventListener = new BotEventListener(bot)
-    for (const sub of subs) {
-        eventListener = sub(eventListener)
+    eventListener.onReady = () => {
+        console.log('EventListener ready.')
+        for (const sub of subs) {
+            eventListener = sub(eventListener)
+        }
     }
 }
 export const closeEventListener = () => { eventListener?.close() }

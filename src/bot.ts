@@ -1,4 +1,4 @@
-import { existsSync, readdirSync, readFileSync } from 'fs'
+import { existsSync, readdirSync, readFileSync, writeFileSync } from 'fs'
 import { Client } from 'tmi.js'
 import { Channel, channelString, readChannel, twitchChannelString } from './channel/channel'
 import { ChatInfo } from './chatInfo'
@@ -68,8 +68,8 @@ const getBotTokens = async (creds: Credentials): Promise<Result<TokenInfo | unde
     if (!(creds.AuthCode && creds.ClientSecret && creds.RedirectURI)) return Result.ok(undefined)
 
     if (existsSync('tokens/access') && existsSync('tokens/refresh')) {
-        let access = readFileSync('tokens/access', 'utf8')
-        let refresh = readFileSync('tokens/refresh', 'utf8')
+        let access = readFileSync('tokens/access', 'utf8').trim()
+        let refresh = readFileSync('tokens/refresh', 'utf8').trim()
         let scope = getDefaultScope()
 
         const validateResult = await validateToken(access)
@@ -135,6 +135,12 @@ export const createBot = async (): Promise<Result<Bot, string[]>> => {
 
     const tokensResult = await getBotTokens(creds)
     if (tokensResult.IsOk) {
+
+        if (tokensResult.Ok !== undefined) {
+            writeFileSync('tokens/access', tokensResult.Ok.Access, 'utf8')
+            writeFileSync('tokens/refresh', tokensResult.Ok.Refresh, 'utf8')
+        }
+
         return Result.map(channelsOk => {
             const channels = Record.fromPairs(Arr.zip(channelList, channelsOk))
             const streams =
@@ -147,13 +153,13 @@ export const createBot = async (): Promise<Result<Bot, string[]>> => {
                 Commands: {},
                 ClientID: creds.ClientID,
                 Tokens:
-                    tokensResult.Ok
+                    tokensResult.Ok !== undefined
                         ? { TwitchApi: true, Access: tokensResult.Ok.Access, Refresh: tokensResult.Ok.Refresh }
                         : { TwitchApi: false },
             }
         }, channelsResult)
     }
-    else return Result.error([])
+    else return Result.error([`Twitch error: ${tokensResult.Error.Status} ${tokensResult.Error.Error}: "${tokensResult.Error.Message}"`])
 }
 
 export const botSay = (channel: string, isMod: boolean, bot: Bot, message: string, force: boolean = false): [number, string] => {

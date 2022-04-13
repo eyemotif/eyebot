@@ -98,90 +98,87 @@ const handleCommandResult = (channelStr: string, commandResult: CommandResult): 
     return Result.ok(void 0)
 }
 
-const main = () => {
-    createBot().then(botResult => {
-        if (!botResult.IsOk) {
-            const botError = botResult.Error
-            for (const error of botError)
-                console.error(`ERROR while creating bot: ${error}`)
-            return
+createBot().then(botResult => {
+    if (!botResult.IsOk) {
+        const botError = botResult.Error
+        for (const error of botError)
+            console.error(`ERROR while creating bot: ${error}`)
+        return
+    }
+    bot = botResult.Ok
+
+    bot.Client.connect()
+        .then(_ => {
+            const [cmnds, aliss] = collectCommands()
+            commands = cmnds
+            aliases = aliss
+            bot.Commands = clone(commands)
+
+            if (bot.Tokens.TwitchApi)
+                collectSubs(bot)
+
+            runBotDaemon()
+        })
+        .catch(reason => {
+            // bot.Client.disconnect()
+            console.error(`ERROR while trying to connect: ${reason}`)
+        })
+
+    bot.Client.on('message', (channel, userstate, message, self) => {
+        if (self || userstate.username === undefined || userstate['message-type'] !== 'chat') return
+
+        const channelStr = channelString(channel)
+        const chatInfo: ChatInfo = {
+            ChannelString: channelStr,
+            Username: userstate.username,
+            IsMod: userstate.mod || (channelStr === userstate.username),
+            Stream: bot.Streams[channelStr],
+            Message: message,
         }
-        bot = botResult.Ok
 
-        bot.Client.connect()
-            .then(_ => {
-                const [cmnds, aliss] = collectCommands()
-                commands = cmnds
-                aliases = aliss
-                bot.Commands = clone(commands)
+        bot.Streams[channelStr].UserChatTimes[userstate.username] = Date.now()
+        if (bot.Channels[channelStr].Options.gambling) {
+            if (bot.Channels[channelStr].Gambling.Users[userstate.username] === undefined)
+                bot.Channels[channelStr].Gambling.Users[userstate.username] = 0
+        }
 
-                // collectSubs(bot)
+        if (message.startsWith(bot.Channels[channelStr].Options.commandPrefix)) {
+            const split = message.trim().split(/ +/)
+            const commandKey = split[0].substring(bot.Channels[channelStr].Options.commandPrefix.length)
+            const body = split.slice(1).map(str => str.trim())
 
-                runBotDaemon()
-            })
-            .catch(reason => {
-                // bot.Client.disconnect()
-                console.error(`ERROR while trying to connect: ${reason}`)
-            })
+            const [command, commandBody] = dealias(commands, bot.Streams[channelStr].Channel.InfoCommands, aliases, [commandKey, body]) ?? []
+            if (command && commandBody) {
+                // this breaks. idk why
+                // const botCopy = clone(bot, true)
+                const botCopy = bot
+                if (command.canRun(botCopy, chatInfo)) {
+                    const commandResult = command.run(botCopy, chatInfo, commandBody)
 
-        bot.Client.on('message', (channel, userstate, message, self) => {
-            if (self || userstate.username === undefined || userstate['message-type'] !== 'chat') return
-
-            const channelStr = channelString(channel)
-            const chatInfo: ChatInfo = {
-                ChannelString: channelStr,
-                Username: userstate.username,
-                IsMod: userstate.mod || (channelStr === userstate.username),
-                Stream: bot.Streams[channelStr],
-                Message: message,
-            }
-
-            bot.Streams[channelStr].UserChatTimes[userstate.username] = Date.now()
-            if (bot.Channels[channelStr].Options.gambling) {
-                if (bot.Channels[channelStr].Gambling.Users[userstate.username] === undefined)
-                    bot.Channels[channelStr].Gambling.Users[userstate.username] = 0
-            }
-
-            if (message.startsWith(bot.Channels[channelStr].Options.commandPrefix)) {
-                const split = message.trim().split(/ +/)
-                const commandKey = split[0].substring(bot.Channels[channelStr].Options.commandPrefix.length)
-                const body = split.slice(1).map(str => str.trim())
-
-                const [command, commandBody] = dealias(commands, bot.Streams[channelStr].Channel.InfoCommands, aliases, [commandKey, body]) ?? []
-                if (command && commandBody) {
-                    // this breaks. idk why
-                    // const botCopy = clone(bot, true)
-                    const botCopy = bot
-                    if (command.canRun(botCopy, chatInfo)) {
-                        const commandResult = command.run(botCopy, chatInfo, commandBody)
-
-                        const handleResult = handleCommandResult(channelStr, commandResult)
-                        if (!handleResult.IsOk) {
-                            if (chatInfo.IsMod) chatSay(bot, chatInfo, `@${userstate.username} Could not update stream.`)
-                            console.log(`* ERROR: Could not update stream: ${handleResult.Error}`)
-                        }
+                    const handleResult = handleCommandResult(channelStr, commandResult)
+                    if (!handleResult.IsOk) {
+                        if (chatInfo.IsMod) chatSay(bot, chatInfo, `@${userstate.username} Could not update stream.`)
+                        console.log(`* ERROR: Could not update stream: ${handleResult.Error}`)
                     }
-                }
-                else {
-                    if (chatInfo.IsMod && bot.Channels[channelStr].Options.unknownCommandMessage)
-                        chatSay(bot, chatInfo, `@${userstate.username} command "${commandKey}" not found.`)
                 }
             }
             else {
-                const listens = getAllListens(bot, chatInfo, message)
-                for (const listen of listens) {
-                    const listenResult = handleCommandResult(channelStr, listen())
-                    if (!listenResult.IsOk) {
-                        console.log(`* ERROR: Could not update stream: ${listenResult.Error}`)
-                        break
-                    }
+                if (chatInfo.IsMod && bot.Channels[channelStr].Options.unknownCommandMessage)
+                    chatSay(bot, chatInfo, `@${userstate.username} command "${commandKey}" not found.`)
+            }
+        }
+        else {
+            const listens = getAllListens(bot, chatInfo, message)
+            for (const listen of listens) {
+                const listenResult = handleCommandResult(channelStr, listen())
+                if (!listenResult.IsOk) {
+                    console.log(`* ERROR: Could not update stream: ${listenResult.Error}`)
+                    break
                 }
             }
-        })
+        }
     })
-}
-
-main()
+}).catch(e => { throw e })
 
 rl.on('line', line => {
     switch (line) {
