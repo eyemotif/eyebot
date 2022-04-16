@@ -88,11 +88,6 @@ The contents of a channel.json file are:
   the channel.
 - `Queues`: An array that stores all the names of the Queues associated with the
   channel.
-- `StreamfunComponents`: **Still in development.** Keeps track of all the
-  Streamfun Components associated with the channel. Each entry keeps track of a
-  different kind of Component, and holds an array of the names of all Components
-  of that kind. See [Streamfun](#streamfun) for more info.
-    - `audio`: Audio clips.
 - `Options`: Various channel-wide options for the bot.
   - `fun` *(boolean)*: Enables various fun commands and listeners.
   - `gambling` *(boolean)*: Enables gambling commands and functionality.
@@ -155,7 +150,7 @@ There are a few built-in variables:
   command. For example, running `!command abc 123` would set `%0` to `abc` and
   `%1` to `123`. Any `%<num>` with `<num>` out of bounds will display `%<num>`
   as is.
-- `%%`: The whole body of the argument, underscore-escaped.
+- `%%`: The whole body of the command, underscore-escaped.
 
 ## Moderator Commands
 
@@ -176,7 +171,7 @@ There are a few built-in variables:
 - `!reminfo <info-command>`: Removes an Info Command (see [Info
   Commands](#info-commands)).
 - `!nextqueue <queue-name>`: Removes and displays the next item in a Queue.
-- `!nextqueue <queue-name>`: Removes but does not display the next item in a Queue.
+- `!skipqueue <queue-name>`: Removes but does not display the next item in a Queue.
 - `!newqueue <queue-name>`: Creates a new Queue.
 - `!remqueue <queue-name>`: Removes a Queue.
 
