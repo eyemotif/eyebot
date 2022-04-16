@@ -19,6 +19,7 @@ Another Twitch bot, written in Typescript.
   - [Adding new Commands](#adding-new-commands)
   - [Adding new Listeners](#adding-new-listeners)
   - [Adding new Info Command Variables](#adding-new-info-command-variables)
+  - [Adding new Twitch API Listeners](#adding-new-twitch-api-listeners)
 
 # Setting up the Bot
 
@@ -217,7 +218,6 @@ haven't written a guide on how exactly to use it yet. However, if you manage to
 figure it out, the commands should work:
 
 - `!sounds`: Lists all the sounds you can play.
-- `!<sound>`: Plays a sound.
 
 # Twitch API Integration
 *All functionality in this section will be disabled if the `twitchapi` option is
@@ -227,7 +227,7 @@ To interact with more than just a channel's chat, a few extra pieces of
 authentification are needed in  to interact witht the Twitch API:
 
 - `authcode`: The code returned when getting an [Authorization code grant
-  flow.](https://dev.twitch.tv/docs/authentication/getting-tokens-oauth#authorization-code-grant-flow).
+  flow](https://dev.twitch.tv/docs/authentication/getting-tokens-oauth#authorization-code-grant-flow).
   Used for generating access tokens. The bot currently uses the following scopes:
   - channel:read:redemptions
 - `clientsecret`: The client secret. Used for generating and refreshing access
@@ -341,3 +341,39 @@ Currently, the only way to add a variable is to add the following line to
 ```
 
 I'll make a more modular solution soon™.
+
+## Adding new Twitch API Listeners
+
+To create a new Twitch API Event:
+
+- Create a new `.ts` file anywhere in [src/](src/).
+- Add an `import` entry for the new file in [src/twitch-api/event/events.ts](src/twitch-api/event/events.ts).
+- Set up a subscription:
+
+```TypeScript
+  sub(listener =>
+    listener
+  )
+```
+
+- Then, add various event listeners (you can chain them together):
+
+```TypeScript
+  sub(listener =>
+    listener
+        .onChannelPointReward('twitch_channel', 'Channel Point Reward',
+            (stream, bot, username, input) => {})
+)
+```
+
+- `onChannelPointReward`:
+  - The first parameter is the Twitch channel to listen for channel point reward
+    redemptions from.
+  - The second parameter is the *exact* name of the channel point reward.
+  - The third parameter is a function that takes four arguments:
+    - `stream`: The `Livestream` object associated with the redemption.
+    - `bot`: The global `Bot` object.
+    - `username`: The `login` (i.e., the all-lowercase name) of the user that
+      redeemed the channel point reward.
+    - `input`: Populated with the user input if the channel point reward
+      requires it, `undefined` if not.

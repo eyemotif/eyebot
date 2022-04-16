@@ -1,7 +1,6 @@
 import { Bot } from './bot'
 import { ChatInfo } from './chatInfo'
 import { CommandResult } from './command/command'
-import { Livestream } from './livestream'
 
 export class MessageListener {
     public static When() { return new MessageListener() }

@@ -1,35 +1,38 @@
 import { Bot, chatSay } from '../bot'
 import { ChatInfo } from '../chatInfo'
-import { Command } from '../command/command'
 import { registerCommands } from '../command/register'
-import { sendToStreamfunServer } from '../streamfun'
 
 const canRun = (_bot: Bot, com: ChatInfo) => com.Stream.Channel.Options.streamfun
+const ifMod = (_bot: Bot, com: ChatInfo) => com.Stream.Channel.Options.streamfun && com.IsMod
 
-const audioCommand = (componentName: string): Command => {
-    return {
-        canRun,
-        run: (_bot, com) => {
-            sendToStreamfunServer(com.Stream.StreamfunConnection!, `audio ${componentName}`)
-            return {}
-        }
-    }
-}
 
 registerCommands(registry =>
     registry
         .register('sounds', {
             canRun,
-            run: (bot, com) => {
-                const newChat = chatSay(bot, com, 'Sounds: !warpstar !boom !thankyou !powerup !treasure !cheer !bonk')
-                return { NewChat: newChat }
+            run: (bot, com, _body) => {
+                com.Stream.StreamfunConnection!.socket.send('components')
+                com.Stream.StreamfunConnection!.socket.once('message', data => {
+                    const components = JSON.parse(data.toString())['audio']
+                    chatSay(bot, com, `Sounds: ${components.join(', ')}`)
+                })
+                return {}
             }
         })
-        .register('warpstar', audioCommand('warpstar'))
-        .register('boom', audioCommand('vineboom'))
-        .register('thankyou', audioCommand('thankyou'))
-        .register('powerup', audioCommand('pwup'))
-        .register('treasure', audioCommand('treasure'))
-        .register('cheer', audioCommand('cheer'))
-        .register('bonk', audioCommand('bonk'))
+        .register('flush', {
+            canRun: ifMod,
+            run: (_bot, com, body) => {
+                if (body.length === 1)
+                    com.Stream.StreamfunConnection!.socket.send(`flush ${body[0]}`)
+                return {}
+            }
+        })
+        .register('volume', {
+            canRun: ifMod,
+            run: (_bot, com, body) => {
+                if (body.length === 2)
+                    com.Stream.StreamfunConnection!.socket.send(`volume ${body[0]} ${body[1]}`)
+                return {}
+            }
+        })
 )

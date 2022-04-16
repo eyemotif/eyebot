@@ -1,6 +1,5 @@
 import clone from 'clone'
-import { Obj, Result } from '../utils'
-import { Channel } from './channel'
+import { Result } from '../utils'
 
 export interface GambleInfo {
     Info: {

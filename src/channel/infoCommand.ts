@@ -1,7 +1,6 @@
-import clone from 'clone';
+import clone from 'clone'
 import { ChatInfo } from '../chatInfo'
 import { escapeUnderscores } from '../command/command'
-import { Livestream } from '../livestream'
 import { Channel, channelLocale, InfoCommands } from './channel'
 
 export class InfoCommandEnvironment {
