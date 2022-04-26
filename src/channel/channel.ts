@@ -5,7 +5,7 @@ import { InfoCommandEnvironment } from './infoCommand'
 import { ChannelOptions } from './options'
 import { Person } from './person'
 
-const channelFileKeys = ['People', 'Options', 'Gambling', 'InfoCommands', 'Queues']
+const channelFileKeys = ['People', 'Options', 'Gambling', 'InfoCommands', 'Queues', 'Counters']
 
 export type People = Record<string, Person>
 export type InfoCommands = Record<string, string>
@@ -19,6 +19,7 @@ export interface Channel {
     Gambling: GambleInfo
     InfoCommands: InfoCommands
     Queues: string[]
+    Counters: Record<string, number>
 }
 
 export const readChannel = (channelStr: string): Result<Channel, string> => {

@@ -204,6 +204,18 @@ registerCommands(registry =>
                 }
             }
         })
+        .register('addCount', {
+            canRun,
+            run: (bot, com, body) => {
+                if (body.length !== 1) {
+                    const newChat = chatSay(bot, com, `Usage: ${com.Stream.Channel.Options.commandPrefix}count <counter-name>.`)
+                    return { NewChat: newChat }
+                }
+                const added = (com.Stream.Channel.Counters[body[0]] ?? -1) + 1
+                const newChat = chatSay(bot, com, `${body[0]}: ${added}`)
+                return { NewChat: newChat, SetCounter: { counterName: body[0], value: added } }
+            }
+        })
 
         .registerAlias('ignoreCommand', body => ['setInfo', body.concat('')])
         .registerAlias('nq', body => ['nextqueue', body])

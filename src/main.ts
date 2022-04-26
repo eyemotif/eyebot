@@ -95,6 +95,10 @@ const handleCommandResult = (channelStr: string, commandResult: CommandResult): 
         delete bot.Streams[channelStr].Queues[commandResult.RemoveQueue]
         bot.Channels[channelStr].Queues = bot.Channels[channelStr].Queues.filter(name => name !== commandResult.RemoveQueue)
     }
+    if (commandResult.SetCounter !== undefined) {
+        bot.Channels[channelStr].Counters[commandResult.SetCounter.counterName] = commandResult.SetCounter.value
+        bot.Streams[channelStr].Channel.Counters[commandResult.SetCounter.counterName] = commandResult.SetCounter.value
+    }
     return Result.ok(void 0)
 }
 

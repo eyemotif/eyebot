@@ -24,6 +24,7 @@
     },
     "InfoCommands": {},
     "Queues": [],
+    "Counters": {},
     "Options": {
         "fun": true,
         "gambling": true,

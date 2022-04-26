@@ -68,6 +68,24 @@ registerCommands(registry =>
                 return { SetQueue: { queueName: body[0], queue: newQueue } }
             }
         })
+        .register('count', {
+            canRun,
+            run: (bot, com, body) => {
+                if (body.length !== 1) {
+                    const newChat = chatSay(bot, com, `Usage: ${com.Stream.Channel.Options.commandPrefix}count <counter-name>.`)
+                    return { NewChat: newChat }
+                }
+                if (com.Stream.Channel.Counters[body[0]] === undefined) {
+                    if (com.IsMod) {
+                        const newChat = chatSay(bot, com, `Counter "${body[0]}" not found!`)
+                        return { NewChat: newChat }
+                    }
+                    else return {}
+                }
+                const newChat = chatSay(bot, com, `${body[0]}: ${com.Stream.Channel.Counters[body[0]]}`)
+                return { NewChat: newChat }
+            }
+        })
 
         .registerAlias('help', _ => ['commands', []])
         .registerAlias('today', _ => ['topic', []])

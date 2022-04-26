@@ -19,6 +19,7 @@ export type CommandResult = {
     NewQueue?: string
     SetQueue?: { queueName: string, queue: string[] }
     RemoveQueue?: string
+    SetCounter?: { counterName: string, value: number }
 }
 
 export const escapeUnderscores = (message: string) => {
