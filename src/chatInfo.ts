@@ -6,4 +6,6 @@ export type ChatInfo = {
     IsMod: boolean
     Stream: Livestream
     Message: string
+    Emotes: Record<string, string[]>
+    EmotesRaw: string
 }

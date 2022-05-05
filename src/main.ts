@@ -14,7 +14,6 @@ import { Command, CommandResult } from './command/command'
 import { collectCommands } from './command/register'
 import { getAllListens } from './messageListener'
 import { delay, Result } from './utils'
-import { connectToStreamfunServer } from './streamfun'
 import { closeEventListener, collectSubs } from './twitch-api/events'
 
 let isRunning = true
@@ -138,6 +137,8 @@ createBot().then(botResult => {
             IsMod: userstate.mod || (channelStr === userstate.username),
             Stream: bot.Streams[channelStr],
             Message: message,
+            Emotes: userstate['emotes'] ?? {},
+            EmotesRaw: userstate['emotes-raw'] ?? '',
         }
 
         bot.Streams[channelStr].UserChatTimes[userstate.username] = Date.now()
@@ -172,6 +173,11 @@ createBot().then(botResult => {
             }
         }
         else {
+            if (bot.StreetServer) {
+                if (bot.StreetServer.validChannel(channelStr))
+                    bot.StreetServer.send(channelStr, `chat /${userstate['emotes-raw'] ?? ''} ${message}`)
+            }
+
             const listens = getAllListens(bot, chatInfo, message)
             for (const listen of listens) {
                 const listenResult = handleCommandResult(channelStr, listen())
@@ -190,9 +196,7 @@ rl.on('line', line => {
             if (isRunning) {
                 isRunning = false
                 bot.Client.disconnect()
-                for (const stream in bot.Streams) {
-                    bot.Streams[stream].StreamfunConnection?.socket.close(1001, 'Bot is stopping.')
-                }
+                bot.StreetServer?.close()
                 closeEventListener()
             }
             rl.close()
@@ -208,11 +212,6 @@ rl.on('line', line => {
                         botSay(channel, true, bot, message)
             })
             break
-        case 'reconnect':
-            for (const stream in bot.Streams) {
-                bot.Streams[stream].StreamfunConnection =
-                    connectToStreamfunServer(undefined, err => console.error(err), () => { })
-            }
         default: break
     }
 })

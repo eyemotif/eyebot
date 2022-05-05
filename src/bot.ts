@@ -4,6 +4,7 @@ import { Channel, channelString, readChannel, twitchChannelString } from './chan
 import { ChatInfo } from './chatInfo'
 import { Command } from './command/command'
 import { createStream, Livestream } from './livestream'
+import { StreetServer } from './street'
 import { refreshToken, requestToken, tokensHaveCorrectScope, validateToken } from './twitch-api/access'
 import { getDefaultScope, TokenInfo, TwitchError } from './twitch-api/common'
 import { Arr, Record, Result } from './utils'
@@ -13,6 +14,7 @@ export interface Bot {
     Channels: Record<string, Channel>
     Streams: Record<string, Livestream>
     Commands: Record<string, Command>
+    StreetServer: StreetServer | undefined
 
     ClientID: string
     Tokens:
@@ -145,12 +147,23 @@ export const createBot = async (): Promise<Result<Bot, string[]>> => {
             const channels = Record.fromPairs(Arr.zip(channelList, channelsOk))
             const streams =
                 Record.fromPairs(Arr.zip(channelList, channelsOk.map(createStream)))
+            const streetConnectedChannels =
+                Object.keys(channels)
+                    .filter(channel => channels[channel].Options.street)
 
             return {
                 Client: client,
                 Channels: channels,
                 Streams: streams,
                 Commands: {},
+                StreetServer:
+                    streetConnectedChannels.length > 0 ?
+                        new StreetServer(
+                            streetConnectedChannels,
+                            (channel, message) => console.log(`Street message from ${channel}: "${message}"`),
+                            (channel, err) => console.error(`Street error from ${channel}: "${err}"`)
+                        )
+                        : undefined,
                 ClientID: creds.ClientID,
                 Tokens:
                     tokensResult.Ok !== undefined

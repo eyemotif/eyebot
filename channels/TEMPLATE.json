@@ -32,7 +32,7 @@
         "commandPrefix": "!",
         "locale": "en-US",
         "unknownCommandMessage": true,
-        "streamfun": false,
+        "street": false,
         "twitchApi": false
     }
 }
