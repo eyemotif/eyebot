@@ -137,8 +137,7 @@ createBot().then(botResult => {
             IsMod: userstate.mod || (channelStr === userstate.username),
             Stream: bot.Streams[channelStr],
             Message: message,
-            Emotes: userstate['emotes'] ?? {},
-            EmotesRaw: userstate['emotes-raw'] ?? '',
+            Userstate: userstate
         }
 
         bot.Streams[channelStr].UserChatTimes[userstate.username] = Date.now()
@@ -174,8 +173,10 @@ createBot().then(botResult => {
         }
         else {
             if (bot.StreetServer) {
-                if (bot.StreetServer.validChannel(channelStr))
-                    bot.StreetServer.send(channelStr, `chat /${userstate['emotes-raw'] ?? ''} ${message}`)
+                if (bot.StreetServer.validChannel(channelStr)) {
+                    bot.StreetServer.cacheUser(channelStr, userstate.username!, userstate['display-name'] ?? userstate.username!, userstate.color ?? '', userstate['badges-raw'] ?? '', userstate['badge-info-raw'] ?? '')
+                    bot.StreetServer.send(channelStr, `chat ${userstate.username ?? ''} /${userstate['emotes-raw'] ?? ''} ${message}`)
+                }
             }
 
             const listens = getAllListens(bot, chatInfo, message)

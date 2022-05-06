@@ -11,7 +11,7 @@ registerCommands(registry =>
         .register('sounds', {
             canRun,
             run: (bot, com, _body) => {
-                bot.StreetServer!.send(com.ChannelString, 'components')
+                bot.StreetServer!.send(com.ChannelString, '~components')
                 bot.StreetServer!.getSocket(com.ChannelString).once('message', data => {
                     const components = JSON.parse(data.toString())['audio']
                     chatSay(bot, com, `Sounds: ${components.join(', ')}`)
@@ -23,15 +23,7 @@ registerCommands(registry =>
             canRun: ifMod,
             run: (bot, com, body) => {
                 if (body.length === 1)
-                    bot.StreetServer!.send(com.ChannelString, `flush ${body[0]}`)
-                return {}
-            }
-        })
-        .register('volume', {
-            canRun: ifMod,
-            run: (bot, com, body) => {
-                if (body.length === 2)
-                    bot.StreetServer!.send(com.ChannelString, `volume ${body[0]} ${body[1]}`)
+                    bot.StreetServer!.send(com.ChannelString, `~flush ${body[0]}`)
                 return {}
             }
         })

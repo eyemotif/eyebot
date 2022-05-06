@@ -5,6 +5,7 @@ type StreetClient = {
     socket: WebSocket
     id: string
     waiting: boolean
+    cachedUsers: Set<string>
 }
 
 export class StreetServer {
@@ -25,7 +26,8 @@ export class StreetServer {
             let client: StreetClient = {
                 socket,
                 id: '',
-                waiting: true
+                waiting: true,
+                cachedUsers: new Set(),
             }
 
             for (let i = 0; ; i++) {
@@ -46,6 +48,7 @@ export class StreetServer {
                     delete this.waitQueue[client.id]
                     this.clients[message].id = message
                     this.clients[message].waiting = false
+
                     socket.on('message', response => this.onMessage(client.id, response.toString()))
                     socket.on('error', err => this.onError(client.id, err))
                 }
@@ -74,6 +77,13 @@ export class StreetServer {
         if (!this.validChannel(channel)) throw `Unknown street channel "${channel}".`
 
         return this.clients[channel].socket
+    }
+    public cacheUser(channel: string, username: string, displayName: string, color: string, badgesRaw: string, badgeInfoRaw: string) {
+        if (!this.validChannel(channel)) throw `Unknown street channel "${channel}".`
+        if (this.clients[channel].cachedUsers.has(username.toLowerCase())) return
+
+        this.clients[channel].cachedUsers.add(username.toLowerCase())
+        this.clients[channel].socket.send(`chat.user ${username} ${displayName} ${color.startsWith('#') ? color : '#' + color} ${badgesRaw} ${badgeInfoRaw}`)
     }
     public close() {
         for (const waiting in this.waitQueue) {

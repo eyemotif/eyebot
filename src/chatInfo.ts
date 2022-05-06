@@ -1,4 +1,5 @@
 import { Livestream } from './livestream'
+import { ChatUserstate } from 'tmi.js'
 
 export type ChatInfo = {
     ChannelString: string
@@ -6,6 +7,5 @@ export type ChatInfo = {
     IsMod: boolean
     Stream: Livestream
     Message: string
-    Emotes: Record<string, string[]>
-    EmotesRaw: string
+    Userstate: ChatUserstate
 }
