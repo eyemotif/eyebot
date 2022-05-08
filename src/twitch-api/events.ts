@@ -40,7 +40,7 @@ export class BotEventListener {
             if (json['type'] === 'RESPONSE') {
                 if (json['error'])
                     throw `Error in response ${json['nonce']}: "${json['error']}"`
-                else console.debug(`Listened to ${json['nonce']}.`)
+                // else console.debug(`Listened to ${json['nonce']}.`)
             }
 
             // channel point reward redemption
