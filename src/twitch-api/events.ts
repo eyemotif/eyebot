@@ -9,15 +9,20 @@ type PopulationInfo = {
 }
 
 export type ChannelPointCallback = (stream: Livestream, bot: Bot, username: string, input: string | undefined) => void
+export type ChannelSubscriptionCallback = (stream: Livestream, bot: Bot, username: string, months: number, giftTo: string | undefined, emoteReplacer: string | undefined, input: string | undefined) => void
+export type ChannelCheerCallback = (stream: Livestream, bot: Bot, username: string, amount: number, input: string) => void
 
 export class BotEventListener {
     private bot: Bot
     private pubSub: TwitchPubSub
     private channelIDs: Record<string, string> = {} // convert from id to name
-    private channelPointRewards: Record<string, [ChannelPointReward, ChannelPointCallback][]> = {}
     private accessToken: string
     private channelsNotPopulated: Record<string, PopulationInfo> = {}
     public onReady = () => { }
+
+    private channelPointRewards: Record<string, [ChannelPointReward, ChannelPointCallback][]> = {}
+    private channelSubscriptions: Record<string, ChannelSubscriptionCallback[]> = {}
+    private channelCheers: Record<string, ChannelCheerCallback[]> = {}
 
     cleanNotPopulatedList = () => {
         for (const channel in this.channelsNotPopulated) {
@@ -35,9 +40,8 @@ export class BotEventListener {
             if (json['type'] === 'RESPONSE') {
                 if (json['error'])
                     throw `Error in response ${json['nonce']}: "${json['error']}"`
-                // else console.debug(`Listened to ${json['nonce']}.`)
+                else console.debug(`Listened to ${json['nonce']}.`)
             }
-            // else console.dir(json)
 
             // channel point reward redemption
             if (json['data']?.['topic']?.startsWith('channel-points')) {
@@ -48,6 +52,35 @@ export class BotEventListener {
                         fn(bot.Streams[channel], bot, redemption['user']['login'], redemption['user_input'])
                         break
                     }
+                }
+            }
+            else if (json['data']?.['topic']?.startsWith('channel-subscribe')) {
+                const subscription = json['data']['message']
+                const channel = this.channelIDs[subscription['channel_id']]
+                for (const fn of this.channelSubscriptions[channel]) {
+                    fn(
+                        bot.Streams[channel],
+                        bot,
+                        subscription['display_name'] ?? subscription['user_name'] ?? 'anonymous',
+                        subscription['cumulative_months'],
+                        subscription['is_gift'] ? (subscription['recipient_display_name'] ?? subscription['recipient_user_name']) : undefined,
+                        subscription['sub_message']['emotes'] ? subscription['sub_message']['emotes'].map((obj: any) => `${obj['id']}:${obj['begin']}-${obj['end']}`).join('/') : undefined,
+                        subscription['sub_message']['message']
+                    )
+                }
+            }
+            else if (json['data']?.['topic']?.startsWith('')) {
+                const cheer = JSON.parse(json['data']['message'])['data']
+                const channel = this.channelIDs[cheer['channel_id']]
+
+                for (const fn of this.channelCheers[channel]) {
+                    fn(
+                        bot.Streams[channel],
+                        bot,
+                        cheer['user_name'],
+                        cheer['bits_used'],
+                        cheer['chat_message']
+                    )
                 }
             }
         }, err => console.error(`Event Listener error: ${err}`))
@@ -86,6 +119,10 @@ export class BotEventListener {
                             }
                             else throw result.Error
                         })
+                        // subscriptions
+                        this.channelSubscriptions[channel] = []
+                        // bits
+                        this.channelCheers[channel] = []
 
                         // listen
                         // channel point rewards
@@ -94,6 +131,24 @@ export class BotEventListener {
                             nonce: `point:${channel}`,
                             data: {
                                 'topics': [`channel-points-channel-v1.${idOk}`],
+                                'auth_token': this.accessToken,
+                            },
+                        }))
+                        // subscriptions
+                        this.pubSub.send(JSON.stringify({
+                            type: 'LISTEN',
+                            nonce: `subs:${channel}`,
+                            data: {
+                                'topics': [`channel-subscribe-events-v1.${idOk}`],
+                                'auth_token': this.accessToken,
+                            },
+                        }))
+                        // bits
+                        this.pubSub.send(JSON.stringify({
+                            type: 'LISTEN',
+                            nonce: `bits:${channel}`,
+                            data: {
+                                'topics': [`channel-bits-events-v2.${idOk}`],
                                 'auth_token': this.accessToken,
                             },
                         }))
@@ -120,6 +175,14 @@ export class BotEventListener {
             throw `Reward "${rewardName}" not found. Valid reward names: ${channelPointRewards.map(([reward, _]) => `"${reward.Name}"`).join(', ')}`
         }
         else throw `Channel "${channel}" not found in channel point rewards. Valid channels: ${Object.keys(this.channelPointRewards).join(', ')}`
+    }
+
+    public onChannelSubscription(channel: string, callback: ChannelSubscriptionCallback) {
+        if (this.channelSubscriptions[channel]) {
+            this.channelSubscriptions[channel].push(callback)
+            return this
+        }
+        else throw `Channel "${channel}" not found in subscriptions. Valid channels: ${Object.keys(this.channelSubscriptions).join(', ')}`
     }
 }
 

@@ -175,7 +175,9 @@ createBot().then(botResult => {
             if (bot.StreetServer) {
                 if (bot.StreetServer.validChannel(channelStr)) {
                     bot.StreetServer.cacheUser(channelStr, userstate.username!, userstate['display-name'] ?? userstate.username!, userstate.color ?? '', userstate['badges-raw'] ?? '', userstate['badge-info-raw'] ?? '')
-                    bot.StreetServer.send(channelStr, `chat ${userstate.username ?? ''} /${userstate['emotes-raw'] ?? ''} ${message}`)
+                    if (userstate.bits)
+                        bot.StreetServer.send(channelStr, `alert bits ${userstate.username ?? ''} ${userstate.bits} /${userstate['emotes-raw'] ?? ''} ${message}`)
+                    else bot.StreetServer.send(channelStr, `chat ${userstate.username ?? ''} /${userstate['emotes-raw'] ?? ''} ${message}`)
                 }
             }
 
@@ -187,6 +189,12 @@ createBot().then(botResult => {
                     break
                 }
             }
+        }
+    })
+
+    bot.Client.on('clearchat', channel => {
+        if (bot.StreetServer && bot.StreetServer.validChannel(channelString(channel))) {
+            bot.StreetServer.send(channelString(channel), 'chat.clear')
         }
     })
 }).catch(e => { throw e })
