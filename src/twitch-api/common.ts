@@ -13,7 +13,7 @@ export type TwitchError = {
     Message: string
 }
 
-export const getDefaultScope = (): string[] => []
+export const getDefaultScope = (): string[] => ['channel:read:redemptions', 'channel:read:subscriptions', 'bits:read']
 
 export const recordToUrlQuery = (query: Record<string, string>): string => {
     let queryString = '?'

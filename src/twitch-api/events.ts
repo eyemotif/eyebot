@@ -54,6 +54,7 @@ export class BotEventListener {
                     }
                 }
             }
+            // channel subscription
             else if (json['data']?.['topic']?.startsWith('channel-subscribe')) {
                 const subscription = json['data']['message']
                 const channel = this.channelIDs[subscription['channel_id']]
@@ -69,7 +70,7 @@ export class BotEventListener {
                     )
                 }
             }
-            else if (json['data']?.['topic']?.startsWith('')) {
+            else if (json['data']?.['topic']?.startsWith('channel-bits')) {
                 const cheer = JSON.parse(json['data']['message'])['data']
                 const channel = this.channelIDs[cheer['channel_id']]
 
@@ -183,6 +184,14 @@ export class BotEventListener {
             return this
         }
         else throw `Channel "${channel}" not found in subscriptions. Valid channels: ${Object.keys(this.channelSubscriptions).join(', ')}`
+    }
+
+    public onChannelCheer(channel: string, callback: ChannelCheerCallback) {
+        if (this.channelCheers[channel]) {
+            this.channelCheers[channel].push(callback)
+            return this
+        }
+        else throw `Channel "${channel}" not found in cheers. Valid channels: ${Object.keys(this.channelCheers).join(', ')}`
     }
 }
 
