@@ -25,6 +25,7 @@
     "InfoCommands": {},
     "Queues": [],
     "Counters": {},
+    "Quotes": [],
     "Options": {
         "fun": true,
         "gambling": true,

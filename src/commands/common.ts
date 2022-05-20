@@ -1,6 +1,6 @@
 import { Bot, chatSay } from '../bot'
 import { registerCommands } from '../command/register'
-import { Record } from '../utils'
+import { Arr, Record } from '../utils'
 import { ChatInfo } from '../chatInfo'
 import { Queue } from '../queue'
 import { escapeUnderscores } from '../command/command'
@@ -83,6 +83,18 @@ registerCommands(registry =>
                     else return {}
                 }
                 const newChat = chatSay(bot, com, `${body[0]}: ${com.Stream.Channel.Counters[body[0]]}`)
+                return { NewChat: newChat }
+            }
+        })
+        .register('quote', {
+            canRun,
+            run: (bot, com, _body) => {
+                if (com.Stream.Channel.Quotes.length === 0) {
+                    const newChat = chatSay(bot, com, 'Channel has no quotes :(')
+                    return { NewChat: newChat }
+                }
+                const quote = Arr.random(com.Stream.Channel.Quotes)
+                const newChat = chatSay(bot, com, quote)
                 return { NewChat: newChat }
             }
         })

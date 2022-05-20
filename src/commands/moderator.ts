@@ -216,6 +216,16 @@ registerCommands(registry =>
                 return { NewChat: newChat, SetCounter: { counterName: body[0], value: added } }
             }
         })
+        .register('quote', {
+            canRun,
+            run: (bot, com, body) => {
+                if (body.length === 0) {
+                    const newChat = chatSay(bot, com, `Usage: ${com.Stream.Channel.Options.commandPrefix}quote <quote_string...>.`)
+                    return { NewChat: newChat }
+                }
+                return { NewQuote: escapeUnderscores(body.join(' ')) }
+            }
+        })
 
         .registerAlias('ignoreCommand', body => ['setInfo', body.concat('')])
         .registerAlias('nq', body => ['nextqueue', body])

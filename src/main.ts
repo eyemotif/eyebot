@@ -98,6 +98,11 @@ const handleCommandResult = (channelStr: string, commandResult: CommandResult): 
         bot.Channels[channelStr].Counters[commandResult.SetCounter.counterName] = commandResult.SetCounter.value
         bot.Streams[channelStr].Channel.Counters[commandResult.SetCounter.counterName] = commandResult.SetCounter.value
     }
+    if (commandResult.NewQuote !== undefined) {
+        bot.Channels[channelStr].Quotes.push(commandResult.NewQuote)
+        bot.Streams[channelStr].Channel.Quotes.push(commandResult.NewQuote)
+
+    }
     return Result.ok(void 0)
 }
 

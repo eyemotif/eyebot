@@ -78,7 +78,7 @@ export class BotEventListener {
                     fn(
                         bot.Streams[channel],
                         bot,
-                        cheer['user_name'],
+                        cheer['user_name'] ?? 'anonymous',
                         cheer['bits_used'],
                         cheer['chat_message']
                     )

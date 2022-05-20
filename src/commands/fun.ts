@@ -16,7 +16,7 @@ registerCommands(registry =>
         .register('girlGamer', {
             canRun,
             run: (bot, com, _body) => {
-                const newChat = chatSay(bot, com, 'hey, sorry I saw your profile and I just thought you looked cute in your picture, I really wanted to tell you that)) It\'s really rare to see girls playing video games haha! I don\'t know why its a guy thing honestly im like really against misogyny and like ill be the one in the kitchen making sandwiches.We should really play l4d2 sometime its a really cool zombie game with a lot of scary moments, but don\'t worry ill be there to protect you ;) sorry that wasnt flirting I swear Im just trying to be friendly I really like your profile picture sorry was that too far? Really sorry i\'m really shy I don\'t go out much haha add me on skype we should talk more you look really nice and fun xxx')
+                const newChat = chatSay(bot, com, 'A girl.... AND a gamer? Whoa mama! Hummina hummina hummina bazooooooooing! *eyes pop out* AROOOOOOOOGA! *jaw drops tongue rolls out* WOOF WOOF WOOF WOOF WOOF WOOF WOOF WOOF WOOF WOOF WOOF WOOF WOOF WOOF WOOF *tongue bursts out of the outh uncontrollably leaking face and everything in reach* WURBLWUBRLBWURblrwurblwurlbrwubrlwburlwbruwrlblwublr *tiny cupid shoots an arrow through heart* Ahhhhhhhhhhh me lady... *heart in the shape of a heart starts beating so hard you can see it through shirt* ba-bum ba-bum ba-bum ba-bum ba-bum *milk truck crashes into a bakery store in the background spiling white liquid and dough on the streets* BABY WANTS TO FUCK *inhales from the gas tank* honka honka honka honka *masturabtes furiously* ohhhh my gooooodd~')
                 return { NewChat: newChat }
             }
         })
