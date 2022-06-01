@@ -127,7 +127,7 @@ registerCommands(registry =>
                 }
             }
         })
-        .register('nextqueue', {
+        .register('nextQueue', {
             canRun,
             run: (bot, com, body) => {
                 if (body.length !== 1) {
@@ -150,7 +150,7 @@ registerCommands(registry =>
                 }
             }
         })
-        .register('skipqueue', {
+        .register('skipQueue', {
             canRun,
             run: (bot, com, body) => {
                 if (body.length !== 1) {
@@ -172,7 +172,7 @@ registerCommands(registry =>
                 }
             }
         })
-        .register('newqueue', {
+        .register('newQueue', {
             canRun,
             run: (bot, com, body) => {
                 if (body.length !== 1) {
@@ -188,7 +188,7 @@ registerCommands(registry =>
                 }
             }
         })
-        .register('remqueue', {
+        .register('remQueue', {
             canRun,
             run: (bot, com, body) => {
                 if (body.length !== 1) {
@@ -216,7 +216,7 @@ registerCommands(registry =>
                 return { NewChat: newChat, SetCounter: { counterName: body[0], value: added } }
             }
         })
-        .register('quote', {
+        .register('addQuote', {
             canRun,
             run: (bot, com, body) => {
                 if (body.length === 0) {

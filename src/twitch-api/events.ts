@@ -135,15 +135,16 @@ export class BotEventListener {
                                 'auth_token': this.accessToken,
                             },
                         }))
-                        // subscriptions
-                        this.pubSub.send(JSON.stringify({
-                            type: 'LISTEN',
-                            nonce: `subs:${channel}`,
-                            data: {
-                                'topics': [`channel-subscribe-events-v1.${idOk}`],
-                                'auth_token': this.accessToken,
-                            },
-                        }))
+                        // TODO: sub alerts crash, something about not being an iterator
+                        // // subscriptions
+                        // this.pubSub.send(JSON.stringify({
+                        //     type: 'LISTEN',
+                        //     nonce: `subs:${channel}`,
+                        //     data: {
+                        //         'topics': [`channel-subscribe-events-v1.${idOk}`],
+                        //         'auth_token': this.accessToken,
+                        //     },
+                        // }))
                         // bits
                         this.pubSub.send(JSON.stringify({
                             type: 'LISTEN',

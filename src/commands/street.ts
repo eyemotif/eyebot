@@ -12,11 +12,10 @@ registerCommands(registry =>
             canRun,
             run: (bot, com, _body) => {
                 bot.StreetServer!.send(com.ChannelString, '~components')
-                bot.StreetServer!.getSockets(com.ChannelString).forEach(
-                    socket => socket.once('message', data => {
-                        const components = JSON.parse(data.toString())['audio']
-                        chatSay(bot, com, `Sounds: ${components.join(', ')}`)
-                    }))
+                bot.StreetServer!.getSockets(com.ChannelString)[0].once('message', data => {
+                    const components = JSON.parse(data.toString())['audio']
+                    chatSay(bot, com, `Sounds: ${components.join(', ')}`)
+                })
                 return {}
             }
         })
