@@ -47,15 +47,15 @@ registerListener(
         //         return {NewChat: chatSay(bot, chatInfo, `@${chatInfo.Username} brian*`)}
         //     else return {}
         // })
-        .contains('cigarette', (bot, chatInfo, _message) => {
-            if (chatInfo.Stream.Channel.Options.fun)
-                return { NewChat: chatSay(bot, chatInfo, `@${chatInfo.Username} cig of rette*`) }
-            else return {}
-        })
+        // .contains('cigarette', (bot, chatInfo, _message) => {
+        //     if (chatInfo.Stream.Channel.Options.fun)
+        //         return { NewChat: chatSay(bot, chatInfo, `@${chatInfo.Username} cig of rette*`) }
+        //     else return {}
+        // })
         .contains('micro', (bot, chatInfo, message) => {
             if (chatInfo.Stream.Channel.Options.fun) {
                 const replaced = replace('micro', ' michael ', message.split(' '))
-                return { NewChat: chatSay(bot, chatInfo, `@${chatInfo.Username} ${replaced}`) }
+                return { NewChat: chatSay(bot, chatInfo, `${replaced}`) }
             }
             else return {}
         })

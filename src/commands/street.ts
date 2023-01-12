@@ -27,4 +27,12 @@ registerCommands(registry =>
                 return {}
             }
         })
+        .register('volume', {
+            canRun: ifMod,
+            run: (bot, com, body) => {
+                if (body.length === 1)
+                    bot.StreetServer!.send(com.ChannelString, `audio.volume ${body[0]}`)
+                return {}
+            }
+        })
 )
