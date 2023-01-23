@@ -13,7 +13,7 @@ Another Twitch bot, written in Typescript.
     - [Info Commands](#info-commands)
   - [Moderator Commands](#moderator-commands)
   - [Gambling](#gambling)
-  - [Streamfun](#streamfun)
+  - [Street](#street)
 - [Twitch API Integration](#twitch-api-integration)
 - [Modifying the Bot](#modifying-the-bot)
   - [Adding new Commands](#adding-new-commands)
@@ -43,7 +43,7 @@ After starting the bot:
 There are three files in the [creds](creds) folder that need to be created in order for
 the bot to work. A single line of text should be put in each file:
 
-- `twitchchannel`: The twitch channel you're using to run the bot.
+- `twitchchannel`: The username of twitch channel you're using to run the bot.
 - `clientid`: The Client ID of your Twitch app.
 - `oauth`: The [OAuth key](https://twitchapps.com/tmi/) of your Twitch app.
 
@@ -202,17 +202,20 @@ Then, the user can run various commands to interact with the gambling system:
   the user is given back their points multiplied by some amount.
 - `!givepoints <user_name> <amount>` (*mod only*): Gives a user points.
 
-## Streamfun
-*All functionality in this section will be disabled if the `streamfun` option is
+## Street
+*All functionality in this section will be disabled if the `street` option is
 set to `false`.*
 
-Streamfun is a program that I made to add custom functionality to a Twitch
+Street is a program that I made to add custom functionality to a Twitch
 stream using a Browser Source in OBS. The program's github page can be found
-[here](https://github.com/eyemotif/streamfun). It's still in development, so I
+[here](https://github.com/eyemotif/street). It's still in development, so I
 haven't written a guide on how exactly to use it yet. However, if you manage to
 figure it out, the commands should work:
 
 - `!sounds`: Lists all the sounds you can play.
+- `!flush` (*mod only*): Clears the audio queue.
+- `!volume <amount>` (*mod only*): Sets the sounds' volume. `1.0` is full
+  volume, and `0.0` is silent.
 
 # Twitch API Integration
 *All functionality in this section will be disabled if the `twitchapi` option is
