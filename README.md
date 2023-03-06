@@ -1,3 +1,10 @@
+# Archival
+I've decided to [rewrite this project in rust](https://github.com/eyemotif/eyebot-rs).
+
+This was a fun exercise, but I've learned that Rust is a much better language to do this sort of thing in.
+
+Plus, this codebase no longer is up to my standard of quality.
+
 # eyebot
 
 Another Twitch bot, written in Typescript.
